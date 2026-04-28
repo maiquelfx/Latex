@@ -1,4 +1,16 @@
 {
+  "editor.fontSize": 16,
+  "editor.lineHeight": 1.8,
+  "editor.wordWrap": "on",
+  "editor.minimap.enabled": false,
+  "workbench.colorTheme": "Default Dark Modern",
+  "editor.fontFamily": "'Fira Code', 'Courier New', monospace",
+  "editor.fontLigatures": true,
+  "editor.renderLineHighlight": "all",
+  "editor.cursorBlinking": "smooth",
+  "editor.smoothScrolling": true,
+  "editor.padding.top": 16,
+
   "latex-workshop.latex.tools": [
     {
       "name": "pdflatex",
@@ -23,5 +35,7 @@
     }
   ],
   "latex-workshop.latex.recipe.default": "pdflatex → biber → glossaries → pdflatex×2",
-  "latex-workshop.latex.autoBuild.run": "onSave"
+  "latex-workshop.latex.autoBuild.run": "onSave",
+  "latex-workshop.view.pdf.viewer": "tab",
+  "latex-workshop.view.pdf.tab.editorGroup": "right"
 }
