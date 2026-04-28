@@ -1,0 +1,32 @@
+name: Compilar LaTeX
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compilar PDF
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: IC-UFF/tese.tex
+          latexmk_shell_escape: true
+          extra_system_packages: "biber perl"
+          pre_compile: |
+            cd IC-UFF
+            pdflatex -interaction=nonstopmode tese.tex
+            biber tese
+            makeglossaries tese
+            pdflatex -interaction=nonstopmode tese.tex
+            pdflatex -interaction=nonstopmode tese.tex
+          post_compile: ""
+
+      - name: Salvar PDF
+        uses: actions/upload-artifact@v4
+        with:
+          name: dissertacao-pdf
+          path: IC-UFF/tese.pdf
