@@ -1,0 +1,144 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.2 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{nty/global//global/global}
+    \entry{da2005}{article}{}
+      \name{author}{2}{}{%
+        {{un=0,uniquepart=base,hash=5380b33f8429df7c1784ef80e4a00863}{%
+           family={Da\bibnamedelima Silva},
+           familyi={D\bibinitperiod\bibinitdelim S\bibinitperiod},
+           given={Edna\bibnamedelima Lucia},
+           giveni={E\bibinitperiod\bibinitdelim L\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=79697b970e3b1adf051c66f6c8f98104}{%
+           family={Menezes},
+           familyi={M\bibinitperiod},
+           given={Estera\bibnamedelima Muszkat},
+           giveni={E\bibinitperiod\bibinitdelim M\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{657e59337fec0400e64c0b107ffbb31b}
+      \strng{fullhash}{657e59337fec0400e64c0b107ffbb31b}
+      \strng{bibnamehash}{657e59337fec0400e64c0b107ffbb31b}
+      \strng{authorbibnamehash}{657e59337fec0400e64c0b107ffbb31b}
+      \strng{authornamehash}{657e59337fec0400e64c0b107ffbb31b}
+      \strng{authorfullhash}{657e59337fec0400e64c0b107ffbb31b}
+      \field{sortinit}{D}
+      \field{sortinithash}{6f385f66841fb5e82009dc833c761848}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{UFSC, Florianópolis, 4a. edição}
+      \field{title}{Metodologia da pesquisa e elaboração de dissertação}
+      \field{volume}{123}
+      \field{year}{2005}
+    \endentry
+    \entry{kitchenham2009systematic}{article}{}
+      \name{author}{6}{}{%
+        {{un=0,uniquepart=base,hash=19919e365e4f12f6028593c952a9bacf}{%
+           family={Kitchenham},
+           familyi={K\bibinitperiod},
+           given={Barbara},
+           giveni={B\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=9be35e32c47d0f046d7ec681286a7a7c}{%
+           family={Brereton},
+           familyi={B\bibinitperiod},
+           given={O\bibnamedelima Pearl},
+           giveni={O\bibinitperiod\bibinitdelim P\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=c3879154809891887a27016663fe556f}{%
+           family={Budgen},
+           familyi={B\bibinitperiod},
+           given={David},
+           giveni={D\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=5a8d8b77cef37ded3cef9f4690d80b5a}{%
+           family={Turner},
+           familyi={T\bibinitperiod},
+           given={Mark},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=8d046a0e21a1a263119b456093c46c3d}{%
+           family={Bailey},
+           familyi={B\bibinitperiod},
+           given={John},
+           giveni={J\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=cce706e69ca1e8779190328485df9f12}{%
+           family={Linkman},
+           familyi={L\bibinitperiod},
+           given={Stephen},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier}%
+      }
+      \strng{namehash}{627d879eb7e32c946f726138157eda31}
+      \strng{fullhash}{4b245544a093333b7be472634d556e32}
+      \strng{bibnamehash}{627d879eb7e32c946f726138157eda31}
+      \strng{authorbibnamehash}{627d879eb7e32c946f726138157eda31}
+      \strng{authornamehash}{627d879eb7e32c946f726138157eda31}
+      \strng{authorfullhash}{4b245544a093333b7be472634d556e32}
+      \field{sortinit}{K}
+      \field{sortinithash}{c02bf6bff1c488450c352b40f5d853ab}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Information and software technology}
+      \field{number}{1}
+      \field{title}{Systematic literature reviews in software engineering--a systematic literature review}
+      \field{volume}{51}
+      \field{year}{2009}
+      \field{pages}{7\bibrangedash 15}
+      \range{pages}{9}
+    \endentry
+    \entry{xavier2020}{misc}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=843a3578a575e09bec97dd711e747935}{%
+           family={Xavier},
+           familyi={X\bibinitperiod},
+           given={Andressa},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{843a3578a575e09bec97dd711e747935}
+      \strng{fullhash}{843a3578a575e09bec97dd711e747935}
+      \strng{bibnamehash}{843a3578a575e09bec97dd711e747935}
+      \strng{authorbibnamehash}{843a3578a575e09bec97dd711e747935}
+      \strng{authornamehash}{843a3578a575e09bec97dd711e747935}
+      \strng{authorfullhash}{843a3578a575e09bec97dd711e747935}
+      \field{sortinit}{X}
+      \field{sortinithash}{1965c258adceecf23ce3d67b05113442}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{Disponível em \url{https://www.tecmundo.com.br/tutorial/834-aprenda-a-usar-as-normas-da-abnt-citacao-2-de-4-.htm}, acessado em 05/10/2021}
+      \field{title}{Aprenda a usar as Normas da ABNT: Citação (2 de 4)}
+      \field{year}{2020}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

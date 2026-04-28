@@ -1,0 +1,13 @@
+\babel@toc {brazil}{}\relax 
+\contentsline {chapter}{\numberline {1}Introdução}{12}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Opções de Citação}{12}{section.1.1}%
+\contentsline {subsection}{\numberline {1.1.1}Citação direta}{12}{subsection.1.1.1}%
+\contentsline {subsection}{\numberline {1.1.2}Citação Indireta}{13}{subsection.1.1.2}%
+\contentsline {subsection}{\numberline {1.1.3}O comando \textit {apud}}{13}{subsection.1.1.3}%
+\contentsline {subsubsection}{\numberline {1.1.3.1}\textit {Apud on line}}{14}{subsubsection.1.1.3.1}%
+\contentsline {section}{\numberline {1.2}Siglas e Abreviaturas}{15}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Figuras}{15}{section.1.3}%
+\contentsline {section}{\numberline {1.4}Tabelas}{15}{section.1.4}%
+\contentsline {chapter}{REFERÊNCIAS}{16}{chapter*.8}%
+\contentsline {chapter}{Ap\^endice{} A{} -$\!$-{} TÍTULO DO APÊNDICE}{17}{appendix.A}%
+\contentsline {chapter}{Ap\^endice{} B{} -$\!$-{} ANEXO A – TÍTULO DO ANEXO}{18}{appendix.B}%
