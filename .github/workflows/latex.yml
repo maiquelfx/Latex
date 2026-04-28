@@ -1,0 +1,22 @@
+name: Compilar LaTeX
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Compilar PDF
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: IC-UFF/tese.tex
+
+      - name: Salvar PDF
+        uses: actions/upload-artifact@v3
+        with:
+          name: dissertacao-pdf
+          path: IC-UFF/tese.pdf
