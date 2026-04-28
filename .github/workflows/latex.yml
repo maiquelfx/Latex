@@ -10,20 +10,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Compilar PDF
-        uses: xu-cheng/latex-action@v3
+      - name: Cache TeX Live
+        uses: actions/cache@v4
         with:
-          root_file: IC-UFF/tese.tex
-          latexmk_shell_escape: true
-          extra_system_packages: "biber perl"
-          pre_compile: |
-            cd IC-UFF
-            pdflatex -interaction=nonstopmode tese.tex
-            biber tese
-            makeglossaries tese
-            pdflatex -interaction=nonstopmode tese.tex
-            pdflatex -interaction=nonstopmode tese.tex
-          post_compile: ""
+          path: /usr/share/texlive
+          key: texlive-full-2024
+
+      - name: Instalar TeX Live
+        run: |
+          if ! command -v pdflatex &> /dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y texlive-full biber
+          fi
+
+      - name: Compilar PDF
+        working-directory: IC-UFF
+        run: |
+          pdflatex -interaction=nonstopmode tese.tex
+          biber tese
+          makeglossaries tese
+          pdflatex -interaction=nonstopmode tese.tex
+          pdflatex -interaction=nonstopmode tese.tex
 
       - name: Salvar PDF
         uses: actions/upload-artifact@v4
