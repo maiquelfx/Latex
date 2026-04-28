@@ -1,0 +1,25 @@
+IC-UFF
+├── Manuais
+│   ├── biblatex-abnt.pdf
+│   └── biblatex-cheatsheet.pdf
+├── biblatex-abnt
+│   ├── abnt-ibid.bbx
+│   ├── abnt-ibid.cbx
+│   ├── abnt-numeric.bbx
+│   ├── abnt-numeric.cbx
+│   ├── abnt.bbx
+│   ├── abnt.cbx
+│   └── english-abnt.lbx
+├── capitulos
+│   ├── cap1.tex
+│   └── figuras
+│       ├── exefig.eps
+│       └── ficha_catalografica.png
+├── estrutura.txt
+├── pos-textuais
+│   ├── anexoA.tex
+│   └── appendixA.tex
+├── pre-textuais
+│   ├── acronimos.tex
+│   └── cap0.tex
+└── run_files.py

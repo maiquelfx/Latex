@@ -1,0 +1,182 @@
+
+%%%% CAPÍTULO 1 - INTRODUÇÃO
+%%
+%% Deve apresentar uma visão global da pesquisa, 
+%% incluindo: breve histórico, importância e
+%% justificativa da escolha do tema, delimitações
+%% do assunto, formulação de hipóteses e objetivos
+%% da pesquisa e estrutura do trabalho.
+
+% Perguntas que podem guiar a introdução - não necessariamente irá ter a resposta para tudo, isso depende da área.
+% 1 - Qual é o contexto em que seu trabalho está inserido?
+% 2 - Qual é o problema que motiva a existência deste trabalho?
+% 3 - Qual é a visão geral da literatura sobre o problema e como é tratado
+% 4 - Por que a solução na literatura não é o suficiente para ?
+% 5 - Como seu trabalho trata o problema ?
+% 6 - como seu trabalho foi avaliado para comprovar que tratou adequadamente o problema?
+% 7 - De forma geral quais foram os resultados ?
+% 8 - Quais foram as contribuições do seu trabalho?
+% 9 -  Como o restante da Dissertação ou Tese está organizada ?
+
+
+\chapter{Introdução}
+\label{cap:introducao}
+
+Deve apresentar uma visão global da pesquisa, incluindo: breve histórico, importância e justificativa da escolha do tema, delimitações do assunto, formulação de hipóteses, objetivos da pesquisa e estrutura do trabalho.
+
+
+Este \'e o primeiro cap\'itulo, apresentamos abaixo as informações de configuração mais utilizadas 
+
+
+
+\section{Opções de Citação}
+\label{sec:citacoes}
+
+Fonte dos dados sobre citação direta e indireta do site \url{https://www.tecmundo.com.br/tutorial/834-aprenda-a-usar-as-normas-da-abnt-citacao-2-de-4-.htm}, autora \textcite{xavier2020}
+
+São comandos de citação deste template usando o pacote abntex2cite:
+
+\textbf{textcite\{referencia\}} retorna por exemplo: \textcite{kitchenham2009systematic}
+
+\textbf{textcite[n de pag.]\{referencia\}}  retorna por exemplo uma citação com a pagina de referencia: \textcite[p.20]{kitchenham2009systematic}
+
+\textbf{cite\{referencia\}} retorna por exemplo: \cite{kitchenham2009systematic}
+
+\textbf{cite[n de pag.]\{referencia\}}  retorna por exemplo uma citação com a pagina de referencia: \cite[p.20]{kitchenham2009systematic}
+
+Obs: para as aspas ficarem corretas usar no inicio 2 crase `` e no final 2 apóstrofos ''
+
+\subsection{Citação direta}
+
+Referente as citações diretas existem 2 formas, sendo que os textos devem estar sempre entre aspas (``  texto'') ``a citação direta é a transcrição textual fiel de parte de um conteúdo de uma obra''  \cite{xavier2020}. Como os exemplos neste paragrafo onde ``a chamada pelo nome do autor, quando feita no final da citação, deve apresentar-se entre parênteses, contendo o sobrenome do autor em letra maiúscula, seguido pelo ano de publicação e página em que o texto se encontra'' \cite{xavier2020}. 
+
+Também existe a citação direta quando o o autor está no inicio da citação segundo \textcite{xavier2020} ``Assim, o sobrenome do autor deve ser digitado normalmente, com a primeira letra em maiúscula e as demais em minúsculo, seguido do ano e página em que o texto se encontra, sendo estas informações apesentadas entre parênteses''.
+
+
+Se a citação direta for com mais de 03 linhas há uma configuração específica.
+
+Conforme descreve \textcite{xavier2020}:
+
+\begin{quoting}[rightmargin=0cm,leftmargin=4cm] % o comando leftmargin tem o recuo de 4cm
+\begin{singlespace} %espaço simples 
+{
+\footnotesize %comando para a fonte ficar tamanho 10
+As citações com mais de três linhas devem ter um tipo de destaque diferente: é necessário reduzir o tamanho da fonte, podendo ser para 10 ou 11 e também é preciso aplicar um recuo de 4cm em relação à margem esquerda — selecione o texto e movimente os marcadores, localizado na régua do Word até o número 4, assim, todo o seu texto ficará com o recuo exigido pelas normas (veja a imagem ao lado). Ao final, a citação com mais de três linhas terá a seguinte apresentação — observe que ela não tem aspas.
+}
+\end{singlespace} %final do comando de espaço simples
+\end{quoting} % fim do comando quoting
+
+
+\subsection{Citação Indireta}
+
+Escreve com um monte de citações diretas deixa o texto muito carregado de aspas (``  ''). Nesta situação pode-se chegar a conclusão que não se deseja escrever o texto com as palavras exatas do autor, tornando assim o texto mais fluido. Para isso pode usar o texto de lido como base e escrever com suas palavras \cite{xavier2020}.
+
+
+Tantos as citações diretas quanto as indiretas podem conter mais de um autor, como por exemplo, \cite{xavier2020, da2005}. Essa forma de citação também pode estar no inicio da conforme \textcite{xavier2020, da2005} as citações pode conter mais de uma referencia no inicio da frase. 
+
+
+
+ \subsection{O comando \textit{apud}}
+
+% ***** O TEXTO DESTA SUBSEÇÃO É DOS AUTORES ABAIXO, PARA DESCREVER O COMANDO apud 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%%%% Classe LaTex - MDT-UFSM-2015 - ver. 1.08 (06/09/2017)   %%%%
+%%%% adaptado da versao de Fabio Natanael Kepler (sem data)  %%%%
+%%%% Grupo de desenvolvimento:                               %%%%
+%%%% Franciano Scremin Puhales, Josue Sehnem,                %%%%
+%%%% Pablo Eli Soares de Oliveira e Diogo Machado Custodio   %%%%
+%%%% Contato: latexufsm@googlegroups.com                     %%%%
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+ 
+  \par A citação \textit{apud} ocorre quando você cita algum autor através de outra obra, sem ter consultado-a propriamente. Neste caso a citação é feita da seguinte forma:
+   
+   A frase original vem de ABC, mas você leu em YYY, não achou o texto original de ABC, então faz um \textit{apud}, neste comando primeiro vem antes vem o autor original (ABC) e depois quem citou (YYY)
+  
+  \begin{center}
+  \rule{0.5\textwidth}{1pt}\\ 
+  $\backslash apud\{material\_citado\_no\_material\_lido\}\{material\_lido\}$ \\
+  \end{center}
+\begin{verbatim}
+Sobre a circulação geral da atmosfera pode-se dizer que os ventos do norte
+não movem moinhos a frase original vem de da2005 mas quem falou foi xavier2020, antes vem o autor original e depois quem citou \apud{da2005}{xavier2020}. 
+\end{verbatim}
+  
+  Sobre a circulação geral da atmosfera pode-se dizer que os ventos do nortenão movem moinhos \apud{xavier2020}{da2005}.
+  
+  Com citação da pagina de origem \apud[p.5]{xavier2020}{da2005}.
+  
+\begin{center}\rule{0.5\textwidth}{1pt}\end{center}  
+  \par Nesse caso, na bibliografia só constará a obra consultada e não aquele referenciada pela obra. Para que isso ocorra naturalmente, a obra consultada deve ser incluída normalmente no arquivo referencias.bib enquanto a obra referenciada indiretamente deve ser incluída com a opção \textit{@hidden}, conforme o modelo de referências\footnote{Isto é um teste de nota de rodapé}.
+
+      \subsubsection{\textit{Apud on line}}
+
+      
+      \par O \textit{textapud} se aplica da mesma maneira que o \textit{apud} descrito anteriormente. O termo \textit{on line} é alusivo ao \textit{$\backslash$textcite$\{$label$\}$} definido no abntex. Nesse caso a citação é feita da seguinte forma:
+      \begin{center}
+      \rule{0.5\textwidth}{1pt}
+            $\backslash textapud\{material\_citado\_no\_material\_lido\}\{material\_lido\}$ \\
+	    \end{center}
+
+ \begin{verbatim}
+Segundo \textapud{xavier2020}{da2005}, os ventos do
+norte não movem moinhos.
+\end{verbatim}
+
+            Segundo \textapud{xavier2020}{da2005}, os ventos do norte não movem moinhos.
+            
+            Com citação da pagina de origem  \textapud[p.20]{xavier2020}{da2005}, os ventos do norte não movem moinhos.
+
+
+
+\section{Siglas e Abreviaturas}
+\label{sec:siglas}
+
+Para usar siglas tem o pacote \acrfull{ACR} que utiliza os comandos:
+
+acrfull - \acrfull{ONU} 
+
+acrshort - \acrshort{ONU}
+
+acrlong -  \acrlong{ONU}
+
+
+
+\section{Figuras}
+
+As figuras podem estar centralizadas ou dependerá da forma de escrita do texto. 
+
+Exemplo de Figura: Ver Figura~\ref{fig:exefig}.
+
+\begin{figure}[!ht]
+   \centering
+   \includegraphics[width=0.3\linewidth]{capitulos/figuras/exefig.eps}
+   \caption{Exemplo de figura}
+   \label{fig:exefig}
+\end{figure}
+
+
+
+\section{Tabelas}
+
+Pode-se utilizar um gerador de tabelas on-line, que agiliza o processo de escrita. Como exemplo temos o site \url{https://www.tablesgenerator.com/}. 
+
+
+Exemplo de Tabela: ver Tabela~\ref{tab:exetab}.
+
+
+\begin{table}[!ht]
+\begin{center}
+\caption{Exemplo de tabela}
+\label{tab:exetab}
+\begin{tabular}{|c |c |}
+\hline
+\textbf{\textbf{Dado 1}} & \textbf{Percentual}\\
+\hline\hline
+Tipo 1 & 0,6 \\
+Tipo 2 & 0,8 \\
+Tipo 3 & 1,0 \\
+Tipo 4 & 0,3 \\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
