@@ -6,11 +6,14 @@
   <title>Preview ABNT — FRAMEWORK COM INTELIGÊNCIA ARTIFICIAL PARA MODELAGEM SEMÂNTICA DE PROCESSOS DE NEGÓCIO EM BPMN A PARTIR DE LINGUAGEM NATURAL</title>
   <style>
 
+@import url('https://fonts.cdnfonts.com/css/latin-modern-roman');
+
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
   background: #525659;
-  font-family: 'Times New Roman', Times, serif;
+  /* Define a Computer Modern (Latin Modern) como primária, com fallback para Times */
+  font-family: 'Latin Modern Roman', 'Times New Roman', Times, serif;
   font-size: 12pt;
   line-height: 1.5;
   color: #000;
@@ -164,6 +167,11 @@ ul.lista li, ol.lista li { margin-bottom: 4pt; }
   border: 1px solid #888; padding: 16pt;
   margin-top: 180pt; font-size: 10pt; line-height: 1.4;
 }
+.equation {
+  text-align: center;
+  margin: 16pt 0;
+  font-size: 12pt;
+}
 
 /* Erro */
 p.erro { color: red; font-style: italic; }
@@ -172,6 +180,16 @@ p.erro { color: red; font-style: italic; }
 .placeholder { color: #888; font-style: italic; text-indent: 0 !important; }
 
   </style>
+ <script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\(', '\)']],
+    displayMath: [['\[', '\]']]
+  }
+};
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
 
@@ -287,7 +305,7 @@ p.erro { color: red; font-style: italic; }
 <p class="corpo">José Viterbo Filho</p>
 <p class="corpo">Gyslla Vasconcelos</p>
 <p class="corpo">NITERÓI</p>
-<p class="corpo">ANO</p>
+<p class="corpo">2026</p>
 <p class="corpo">Tese de Doutorado OU Dissertação de Mestrado apresentada ao Programa de Pós-Graduação em Computação da Universidade Federal Fluminense como requisito parcial para a obtenção do Grau de Doutor ou Mestre em Computação. Área de concentração: ÁREA DE CONCENTRAÇÃO.</p>
 <p class="corpo">NOME DO ALUNO</p>
 <p class="corpo">TÍTULO DO TRABALHO</p>
@@ -307,6 +325,7 @@ p.erro { color: red; font-style: italic; }
 <p class="corpo">Keywords: Palavras representativas do conteúdo do trabalho, isto é, palavras-chave e/ou descritores, na língua (ABNT, 2005).</p></div><div class="page"><h1 class="chapter">Introdução</h1>
 <p class="corpo">Deve apresentar uma visão global da pesquisa, incluindo: breve histórico, importância e justificativa da escolha do tema, delimitações do assunto, formulação de hipóteses, objetivos da pesquisa e estrutura do trabalho.</p>
 <p class="corpo">Este é o primeiro capítulo, apresentamos abaixo as informações de configuração mais utilizadas</p>
+<p class="corpo">[E = mc^2]</p>
 <h2>Opções de Citação</h2>
 <p class="corpo">Fonte dos dados sobre citação direta e indireta do site , autora</p>
 <p class="corpo">São comandos de citação deste template usando o pacote abntex2cite:</p>

@@ -291,7 +291,7 @@ def find_meta(project_root: Path) -> dict:
 SKIP_ENVS = {
     'figure', 'figure*', 'table', 'table*', 'verbatim', 'lstlisting',
     'tikzpicture', 'algorithm', 'algorithmic', 'align', 'align*',
-    'equation', 'equation*', 'eqnarray', 'eqnarray*',
+     'eqnarray', 'eqnarray*',
     'tabular', 'tabular*', 'array', 'minipage', 'wrapfigure',
     'sidewaysfigure', 'sidewaystable', 'longtable',
 }
@@ -346,9 +346,24 @@ class TexParser:
             html += f'</{tag}>'
             out.append(html)
             list_stack.pop()
-
+        
+                    # --- CAPTURA EQUACOES (ANTES DO SPLIT) ---
+            raw = re.sub(
+                r'\\begin\{equation\}(.*?)\\end\{equation\}',
+                lambda m: f'\n@@EQ@@{m.group(1)}@@END_EQ@@\n',
+                raw,
+                flags=re.DOTALL
+            )
+            # ----------------------------------------    
         for line in raw.split('\n'):
             s = re.sub(r'(?<!\\)%.*', '', line).strip()
+            # --- RENDER EQUACAO ---
+            if s.startswith('@@EQ@@'):
+                flush_para()
+                eq = s.replace('@@EQ@@', '').replace('@@END_EQ@@', '').strip()
+                out.append(f'<div class="equation">\\[{eq}\\]</div>')
+                continue
+            # ---------------------
             if not s:
                 flush_para()
                 continue
@@ -455,11 +470,14 @@ class TexParser:
 # ==============================================================================
 
 CSS = r"""
+@import url('https://fonts.cdnfonts.com/css/latin-modern-roman');
+
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
   background: #525659;
-  font-family: 'Times New Roman', Times, serif;
+  /* Define a Computer Modern (Latin Modern) como primária, com fallback para Times */
+  font-family: 'Latin Modern Roman', 'Times New Roman', Times, serif;
   font-size: 12pt;
   line-height: 1.5;
   color: #000;
@@ -612,6 +630,11 @@ ul.lista li, ol.lista li { margin-bottom: 4pt; }
 .ficha-box {
   border: 1px solid #888; padding: 16pt;
   margin-top: 180pt; font-size: 10pt; line-height: 1.4;
+}
+.equation {
+  text-align: center;
+  margin: 16pt 0;
+  font-size: 12pt;
 }
 
 /* Erro */
@@ -823,6 +846,16 @@ def generate(project_root: Path):
   <style>
 {CSS}
   </style>
+ <script>
+window.MathJax = {{
+  tex: {{
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['\\[', '\\]']]
+  }}
+}};
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
 
