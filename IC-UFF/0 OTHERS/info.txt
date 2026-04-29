@@ -1,3 +1,19 @@
+ENVIAR ALTERAÇÕES PARA O GITHUB NA PASTA \LATEX
+git add . && git commit -m "game 2" && git push
+
+ORGANIZAR:
+git add .
+git rebase --continue
+git push
+
+OU SEMPRE QUE TROCAR DE AMBIENTE
+git pull --rebase
+
+SABER EM QUE PASTA ESTA
+pwd
+
+
+
 RODAR RÁPIDO SEM REFERÊNCIAS
 
 cd /workspaces/Latex/IC-UFF
