@@ -1,0 +1,76 @@
+RODAR RÁPIDO SEM REFERÊNCIAS
+
+cd /workspaces/Latex/IC-UFF
+pdflatex -interaction=nonstopmode tese.tex
+
+
+Completo (com referências e glossário):
+
+cd /workspaces/Latex/IC-UFF
+pdflatex tese.tex && biber tese && makeglossaries tese && pdflatex tese.tex && pdflatex tese.tex
+
+SALVAR NO GITHUB
+
+cd /workspaces/Latex
+git add .
+git commit -m "descreva o que fez aqui"
+git push
+
+
+
+puxar mudanças que fez no Windows via Trae/Notepad++:
+
+cd /workspaces/Latex
+git pull
+cd IC-UFF
+pdflatex tese.tex  # ou a compilação completa
+
+
+MUDAR LAYOUT
+cat > /workspaces/Latex/.vscode/settings.json << 'EOF'
+{
+  "editor.fontSize": 16,
+  "editor.lineHeight": 1.8,
+  "editor.wordWrap": "on",
+  "editor.minimap.enabled": false,
+  "workbench.colorTheme": "Default Dark Modern",
+  "editor.fontFamily": "'Fira Code', 'Courier New', monospace",
+  "editor.fontLigatures": true,
+  "editor.renderLineHighlight": "all",
+  "editor.cursorBlinking": "smooth",
+  "editor.smoothScrolling": true,
+  "editor.padding.top": 16,
+
+  "latex-workshop.latex.tools": [
+    {
+      "name": "pdflatex",
+      "command": "pdflatex",
+      "args": ["-synctex=1", "-interaction=nonstopmode", "-file-line-error", "%DOC%"]
+    },
+    {
+      "name": "biber",
+      "command": "biber",
+      "args": ["%DOCFILE%"]
+    },
+    {
+      "name": "makeglossaries",
+      "command": "makeglossaries",
+      "args": ["%DOCFILE%"]
+    }
+  ],
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "pdflatex → biber → glossaries → pdflatex×2",
+      "tools": ["pdflatex", "biber", "makeglossaries", "pdflatex", "pdflatex"]
+    }
+  ],
+  "latex-workshop.latex.recipe.default": "pdflatex → biber → glossaries → pdflatex×2",
+  "latex-workshop.latex.autoBuild.run": "onSave",
+  "latex-workshop.view.pdf.viewer": "tab",
+  "latex-workshop.view.pdf.tab.editorGroup": "right"
+}
+EOF
+
+git add .
+git commit -m "configura editor: fonte, tema e split view"
+git push

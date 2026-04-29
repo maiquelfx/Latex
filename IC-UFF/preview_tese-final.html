@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Preview ABNT — FRAMEWORK COM INTELIGÊNCIA ARTIFICIAL PARA MODELAGEM SEMÂNTICA DE PROCESSOS DE NEGÓCIO EM BPMN A PARTIR DE LINGUAGEM NATURAL</title>
+  <style>
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #525659;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 12pt;
+  line-height: 1.5;
+  color: #000;
+}
+
+/* Aviso */
+.aviso {
+  position: sticky; top: 0; z-index: 999;
+  background: #fff3cd; border-bottom: 2px solid #e6ac00;
+  padding: 6px 16px; text-align: center;
+  font-family: Arial, sans-serif; font-size: 9.5pt;
+}
+.aviso strong { color: #7a5500; }
+.aviso code {
+  background: #f0e0a0; padding: 0 4px;
+  border-radius: 3px; font-size: 8.5pt;
+}
+
+/* Pagina A4 */
+.page {
+  background: white;
+  width: 210mm;
+  min-height: 297mm;
+  margin: 16px auto;
+  box-shadow: 0 3px 10px rgba(0,0,0,.55);
+  padding: 30mm 20mm 20mm 30mm;
+  position: relative;
+}
+
+@media print {
+  body  { background: white; }
+  .aviso { display: none; }
+  .page {
+    margin: 0; box-shadow: none;
+    width: auto; min-height: auto; padding: 0;
+    page-break-after: always;
+  }
+  @page { size: A4; margin: 30mm 20mm 20mm 30mm; }
+}
+
+/* Capa */
+.capa {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: space-between;
+  min-height: 237mm; text-align: center;
+}
+.capa-inst   { font-size: 12pt; font-weight: bold; }
+.capa-autor  { font-size: 12pt; font-weight: bold; margin-top: 60pt; }
+.capa-titulo {
+  font-size: 14pt; font-weight: bold; text-transform: uppercase;
+  margin-top: auto; margin-bottom: auto;
+}
+.capa-local  { font-size: 12pt; }
+
+/* Folha de rosto */
+.rosto {
+  display: flex; flex-direction: column;
+  align-items: center; min-height: 237mm; text-align: center;
+}
+.rosto-autor   { font-weight: bold; font-size: 12pt; }
+.rosto-titulo  { font-weight: bold; font-size: 14pt; text-transform: uppercase; margin: 40pt 0; }
+.rosto-natureza {
+  width: 50%; margin-left: auto; margin-right: 0;
+  text-align: justify; font-size: 11pt; line-height: 1.4;
+}
+.rosto-orientadores { margin-top: 40pt; font-size: 11pt; }
+.rosto-local   { margin-top: auto; font-size: 12pt; }
+
+/* Banca */
+.banca-membro {
+  display: flex; flex-direction: column;
+  align-items: center; margin: 20pt 0;
+}
+.banca-linha { border-top: 1px solid #000; width: 80%; margin-bottom: 4pt; }
+
+/* Titulos pre-textuais */
+h1.titulo-pre {
+  font-size: 14pt; font-weight: bold; font-variant: small-caps;
+  text-align: center; margin-top: 0; margin-bottom: 24pt;
+  page-break-before: always;
+}
+
+/* Capitulos */
+body  { counter-reset: chapter; }
+.page { counter-reset: section subsection subsubsection; }
+
+h1.chapter {
+  font-size: 14pt; font-weight: bold; text-transform: uppercase;
+  text-align: left; margin-top: 0; margin-bottom: 24pt;
+  page-break-before: always;
+  counter-increment: chapter;
+  counter-reset: section;
+}
+h1.chapter::before { content: counter(chapter) "\00a0\00a0"; }
+
+h2 {
+  font-size: 12pt; font-weight: bold;
+  margin-top: 18pt; margin-bottom: 12pt;
+  counter-increment: section;
+  counter-reset: subsection;
+}
+h2::before { content: counter(chapter) "." counter(section) "\00a0\00a0"; }
+
+h3 {
+  font-size: 12pt; font-weight: bold; font-style: italic;
+  margin-top: 14pt; margin-bottom: 10pt;
+  counter-increment: subsection;
+  counter-reset: subsubsection;
+}
+h3::before { content: counter(chapter) "." counter(section) "." counter(subsection) "\00a0\00a0"; }
+
+h4 {
+  font-size: 12pt; font-weight: bold;
+  margin-top: 12pt; margin-bottom: 8pt;
+  counter-increment: subsubsection;
+}
+h4::before {
+  content: counter(chapter) "." counter(section) "."
+           counter(subsection) "." counter(subsubsection) "\00a0\00a0";
+}
+
+h5 { font-size: 12pt; font-weight: bold; margin-top: 10pt; margin-bottom: 6pt; }
+
+/* Paragrafos */
+p.corpo {
+  text-align: justify;
+  text-indent: 1.25cm;
+  margin: 0;
+}
+p.texto-citacao {
+  text-align: justify;
+  font-size: 10pt; line-height: 1.0;
+  text-indent: 0; margin: 0;
+}
+
+/* Citacao longa */
+.citacao-longa {
+  margin-left: 4cm;
+  margin-top: 12pt; margin-bottom: 12pt;
+}
+
+/* Listas */
+ul.lista, ol.lista {
+  margin-left: 1.5cm;
+  margin-top: 6pt; margin-bottom: 6pt;
+}
+ul.lista li, ol.lista li { margin-bottom: 4pt; }
+
+/* Ficha catalografica */
+.ficha-box {
+  border: 1px solid #888; padding: 16pt;
+  margin-top: 180pt; font-size: 10pt; line-height: 1.4;
+}
+
+/* Erro */
+p.erro { color: red; font-style: italic; }
+
+/* Sumario / Listas placeholder */
+.placeholder { color: #888; font-style: italic; text-indent: 0 !important; }
+
+  </style>
+</head>
+<body>
+
+<div class="aviso">
+  <strong>⚠ Preview ABNT — PPGC-UFF</strong>
+  &nbsp;|&nbsp;
+  Aproximacao visual de <code>pdflatex tese.tex</code>
+  &nbsp;|&nbsp;
+  Para PDF real: <code>Ctrl+P &rarr; Salvar como PDF</code>
+  (desmarque cabecalho/rodape do navegador)
+</div>
+
+<div class="page">
+<div class="capa">
+  <div class="capa-inst">UNIVERSIDADE FEDERAL FLUMINENSE</div>
+  <div class="capa-autor">MAIQUEL E SILVA GOMES</div>
+  <div>
+    <div class="capa-titulo">FRAMEWORK COM INTELIGÊNCIA ARTIFICIAL PARA MODELAGEM SEMÂNTICA DE PROCESSOS DE NEGÓCIO EM BPMN A PARTIR DE LINGUAGEM NATURAL</div>
+    
+  </div>
+  <div class="capa-local">NITERÓI<br>2026</div>
+</div>
+</div><div class="page">
+<div class="rosto">
+  <div class="rosto-autor">MAIQUEL E SILVA GOMES</div>
+  <div>
+    <div class="rosto-titulo">FRAMEWORK COM INTELIGÊNCIA ARTIFICIAL PARA MODELAGEM SEMÂNTICA DE PROCESSOS DE NEGÓCIO EM BPMN A PARTIR DE LINGUAGEM NATURAL</div>
+    
+  </div>
+  <div class="rosto-natureza">
+    Dissertacao de Mestrado apresentada ao Programa de Pos-Graduacao em Computacao da
+    UNIVERSIDADE FEDERAL FLUMINENSE como requisito parcial para a obtencao do Grau
+    de Mestre em Computacao.<br><br>
+    Area de concentracao: Ciencia da Computacao.
+  </div>
+  <div class="rosto-orientadores">Orientador: José Viterbo Filho<br>Coorientador: Gyslla Vasconcelos</div>
+  <div class="rosto-local">NITERÓI<br>2026</div>
+</div>
+</div><div class="page">
+<h1 class="titulo-pre">Ficha Catalografica</h1>
+<div class="ficha-box">
+  <p><strong>MAIQUEL E SILVA GOMES</strong></p>
+  <p style="margin-left:1cm">
+    FRAMEWORK COM INTELIGÊNCIA ARTIFICIAL PARA MODELAGEM SEMÂNTICA DE PROCESSOS DE NEGÓCIO EM BPMN A PARTIR DE LINGUAGEM NATURAL / MAIQUEL E SILVA GOMES.
+    &ndash; NITERÓI, 2026.
+  </p>
+  <p style="margin-top:8pt">Orientador: José Viterbo Filho</p>
+  <p>
+    Dissertacao de Mestrado &ndash; UNIVERSIDADE FEDERAL FLUMINENSE,
+    Programa de Pos-Graduacao em Computacao, 2026.
+  </p>
+  <p style="margin-top:12pt;color:#888;font-size:9pt">
+    [Substituir pelo print da ficha gerada pela Biblioteca da EEIC-UFF]
+  </p>
+</div>
+</div><div class="page">
+<h1 class="titulo-pre">Folha de Aprovacao</h1>
+<p style="text-align:center"><strong>MAIQUEL E SILVA GOMES</strong></p>
+<p style="text-align:center;font-weight:bold;text-transform:uppercase;margin:12pt 0">
+  FRAMEWORK COM INTELIGÊNCIA ARTIFICIAL PARA MODELAGEM SEMÂNTICA DE PROCESSOS DE NEGÓCIO EM BPMN A PARTIR DE LINGUAGEM NATURAL
+</p>
+<p style="margin-left:50%;text-align:justify;font-size:11pt">
+  Dissertacao de Mestrado apresentada ao Programa de Pos-Graduacao em Computacao da UNIVERSIDADE FEDERAL FLUMINENSE
+  como requisito parcial para a obtencao do Grau de Mestre em Computacao.
+  Area de concentracao: Ciencia da Computacao.
+</p>
+<p style="margin-top:24pt">Aprovada em _____ de 2026.</p>
+<p style="font-weight:bold;margin-top:24pt">BANCA EXAMINADORA</p>
+<div class="banca-membro">
+  <div class="banca-linha"></div>
+  <p>José Viterbo Filho &ndash; Orientador,
+     UNIVERSIDADE FEDERAL FLUMINENSE</p>
+</div>
+<div class="banca-membro">
+  <div class="banca-linha"></div>
+  <p>Prof. Nome do Avaliador &ndash; Instituicao</p>
+</div>
+<div class="banca-membro">
+  <div class="banca-linha"></div>
+  <p>Prof. Nome do Avaliador &ndash; Instituicao</p>
+</div>
+<p style="text-align:center;margin-top:24pt">
+  NITERÓI<br>2026
+</p>
+</div><div class="page">
+<h1 class="titulo-pre">Dedicatoria</h1>
+<p class="corpo placeholder" style="margin-top:80pt;text-align:right;text-indent:0">
+  [Elemento opcional &mdash; dedicatoria do autor]
+</p>
+</div><div class="page">
+<h1 class="titulo-pre">Agradecimentos</h1>
+<p class="corpo placeholder">[Elemento opcional &mdash; agradecimentos do autor]</p>
+</div><div class="page">
+<h1 class="titulo-pre">Lista de Figuras</h1>
+<p class="corpo placeholder">[Gerada automaticamente pelo LaTeX]</p>
+</div>
+<div class="page">
+<h1 class="titulo-pre">Lista de Tabelas</h1>
+<p class="corpo placeholder">[Gerada automaticamente pelo LaTeX]</p>
+</div>
+<div class="page">
+<h1 class="titulo-pre">Lista de Abreviaturas e Siglas</h1>
+<p class="corpo placeholder">[Gerada automaticamente pelo glossario LaTeX]</p>
+</div><div class="page">
+<h1 class="titulo-pre">Sumario</h1>
+<p class="corpo placeholder">
+  [Gerado automaticamente pelo LaTeX &mdash;
+  numeracao de paginas real nao disponivel no preview HTML]
+</p>
+</div><div class="page"><p class="corpo">ONUONUOrganização das Nações Unidas ACRACRAcronimos</p></div><div class="page"><p class="corpo">MAIQUEL E SILVA GOMES</p>
+<p class="corpo">FRAMEWORK COM INTELIGÊNCIA ARTIFICIAL PARA MODELAGEM SEMÂNTICA DE PROCESSOS DE NEGÓCIO EM BPMN A PARTIR DE LINGUAGEM NATURAL</p>
+<p class="corpo">UNIVERSIDADE FEDERAL FLUMINENSE</p>
+<p class="corpo">José Viterbo Filho</p>
+<p class="corpo">Gyslla Vasconcelos</p>
+<p class="corpo">NITERÓI</p>
+<p class="corpo">ANO</p>
+<p class="corpo">Tese de Doutorado OU Dissertação de Mestrado apresentada ao Programa de Pós-Graduação em Computação da Universidade Federal Fluminense como requisito parcial para a obtenção do Grau de Doutor ou Mestre em Computação. Área de concentração: ÁREA DE CONCENTRAÇÃO.</p>
+<p class="corpo">NOME DO ALUNO</p>
+<p class="corpo">TÍTULO DO TRABALHO</p>
+<p class="corpo">Aprovada em MES de ANO.</p>
+<p class="corpo">BANCA EXAMINADORA Prof. NOME do ORIENTADOR - Orientador, UFF Prof. NOME DO AVALIADOR, INSTITUIÇÃO Prof. NOME DO AVALIADOR, INSTITUIÇÃO Prof. NOME DO AVALIADOR, INSTITUIÇÃO Prof. NOME DO AVALIADOR, INSTITUIÇÃO</p>
+<p class="corpo">Niterói</p>
+<p class="corpo">ANO</p>
+<p class="corpo">Dedicatória(s): Elemento opcional onde o autor presta homenagem ou dedica seu trabalho (ABNT, 2005).</p>
+<p class="corpo">Vida longa e próspera! (Spock) “Homenagem a Leonard Nimoy”</p>
+<p class="corpo">Agradecimentos Elemento opcional, colocado após a dedicatória (ABNT, 2005). Ao meu orientador e minha orientadora, que me mostraram os caminhos a serem seguidos e pela confiança depositada.</p>
+<h1 class="titulo-pre">Resumo</h1>
+<p class="corpo">Elemento obrigatório, constituído de uma sequência de frases concisas e objetivas e não de uma simples enumeração de tópicos, não ultrapassando 500 palavras ABNT NBR 6028:2003.</p>
+<p class="corpo">Palavras-chave: Palavras representativas do conteúdo do trabalho, isto é, palavras-chave e/ou descritores, conforme a ABNT NBR 6028:2003.</p>
+<h1 class="titulo-pre">Abstract</h1>
+<p class="corpo">Elemento obrigatório, em língua estrangeira, com as mesmas características do resumo em língua vernácula (ABNT, 2005).</p>
+<p class="corpo">O resumo deve ser redigido na terceira pessoa do singular, com verbo na voz ativa, não ultrapassando uma página ou 500 palavras, segundo a ABNT NBR 6028). Evitando-se ouso de parágrafos no meio do resumo, assim como fórmulas, equações e símbolos. Iniciar o resumo situando o trabalho no contexto geral, apresentar os objetivos, descrever a metodologia utilizada, relatar a contribuição própria, comentar os resultados obtidos e finalmente apresentaras conclusões mais importantes do trabalho.</p>
+<p class="corpo">Keywords: Palavras representativas do conteúdo do trabalho, isto é, palavras-chave e/ou descritores, na língua (ABNT, 2005).</p></div><div class="page"><h1 class="chapter">Introdução</h1>
+<p class="corpo">Deve apresentar uma visão global da pesquisa, incluindo: breve histórico, importância e justificativa da escolha do tema, delimitações do assunto, formulação de hipóteses, objetivos da pesquisa e estrutura do trabalho.</p>
+<p class="corpo">Este é o primeiro capítulo, apresentamos abaixo as informações de configuração mais utilizadas</p>
+<h2>Opções de Citação</h2>
+<p class="corpo">Fonte dos dados sobre citação direta e indireta do site , autora</p>
+<p class="corpo">São comandos de citação deste template usando o pacote abntex2cite:</p>
+<p class="corpo">textcite retorna por exemplo:</p>
+<p class="corpo">textcite[n de pag.] retorna por exemplo uma citação com a pagina de referencia:</p>
+<p class="corpo">cite retorna por exemplo:</p>
+<p class="corpo">cite[n de pag.] retorna por exemplo uma citação com a pagina de referencia:</p>
+<p class="corpo">Obs: para as aspas ficarem corretas usar no inicio 2 crase “ e no final 2 apóstrofos ”</p>
+<h3>Citação direta</h3>
+<p class="corpo">Referente as citações diretas existem 2 formas, sendo que os textos devem estar sempre entre aspas (“ texto”) “a citação direta é a transcrição textual fiel de parte de um conteúdo de uma obra” . Como os exemplos neste paragrafo onde “a chamada pelo nome do autor, quando feita no final da citação, deve apresentar-se entre parênteses, contendo o sobrenome do autor em letra maiúscula, seguido pelo ano de publicação e página em que o texto se encontra” .</p>
+<p class="corpo">Também existe a citação direta quando o o autor está no inicio da citação segundo “Assim, o sobrenome do autor deve ser digitado normalmente, com a primeira letra em maiúscula e as demais em minúsculo, seguido do ano e página em que o texto se encontra, sendo estas informações apesentadas entre parênteses”.</p>
+<p class="corpo">Se a citação direta for com mais de 03 linhas há uma configuração específica.</p>
+<p class="corpo">Conforme descreve :</p>
+<div class="citacao-longa">
+<p class="texto-citacao">As citações com mais de três linhas devem ter um tipo de destaque diferente: é necessário reduzir o tamanho da fonte, podendo ser para 10 ou 11 e também é preciso aplicar um recuo de em relação à margem esquerda — selecione o texto e movimente os marcadores, localizado na régua do Word até o número 4, assim, todo o seu texto ficará com o recuo exigido pelas normas (veja a imagem ao lado). Ao final, a citação com mais de três linhas terá a seguinte apresentação — observe que ela não tem aspas.</p>
+</div>
+<h3>Citação Indireta</h3>
+<p class="corpo">Escreve com um monte de citações diretas deixa o texto muito carregado de aspas (“ ”). Nesta situação pode-se chegar a conclusão que não se deseja escrever o texto com as palavras exatas do autor, tornando assim o texto mais fluido. Para isso pode usar o texto de lido como base e escrever com suas palavras .</p>
+<p class="corpo">Tantos as citações diretas quanto as indiretas podem conter mais de um autor, como por exemplo, . Essa forma de citação também pode estar no inicio da conforme as citações pode conter mais de uma referencia no inicio da frase.</p>
+<h3>O comando apud</h3>
+<p class="corpo">A citação apud ocorre quando você cita algum autor através de outra obra, sem ter consultado-a propriamente. Neste caso a citação é feita da seguinte forma:</p>
+<p class="corpo">A frase original vem de ABC, mas você leu em YYY, não achou o texto original de ABC, então faz um apud, neste comando primeiro vem antes vem o autor original (ABC) e depois quem citou (YYY)</p>
+<p class="corpo">$ apud\_citado\_no\_material\_lido material\_lido$</p>
+<p class="corpo">Sobre a circulação geral da atmosfera pode-se dizer que os ventos do nortenão movem moinhos .</p>
+<p class="corpo">Com citação da pagina de origem .</p>
+<p class="corpo">Nesse caso, na bibliografia só constará a obra consultada e não aquele referenciada pela obra. Para que isso ocorra naturalmente, a obra consultada deve ser incluída normalmente no arquivo referencias.bib enquanto a obra referenciada indiretamente deve ser incluída com a opção @hidden, conforme o modelo de referências .</p>
+<h4>Apud on line</h4>
+<p class="corpo">O textapud se aplica da mesma maneira que o apud descrito anteriormente. O termo on line é alusivo ao $$textcite$$label$$ definido no abntex. Nesse caso a citação é feita da seguinte forma: $ textapud\_citado\_no\_material\_lido material\_lido$</p>
+<p class="corpo">Segundo , os ventos do norte não movem moinhos.</p>
+<p class="corpo">Com citação da pagina de origem , os ventos do norte não movem moinhos.</p>
+<h2>Siglas e Abreviaturas</h2>
+<p class="corpo">Para usar siglas tem o pacote que utiliza os comandos:</p>
+<p class="corpo">acrfull -</p>
+<p class="corpo">acrshort -</p>
+<p class="corpo">acrlong -</p>
+<h2>Figuras</h2>
+<p class="corpo">As figuras podem estar centralizadas ou dependerá da forma de escrita do texto.</p>
+<p class="corpo">Exemplo de Figura: Ver Figura~ .</p>
+<h2>Tabelas</h2>
+<p class="corpo">Pode-se utilizar um gerador de tabelas on-line, que agiliza o processo de escrita. Como exemplo temos o site .</p>
+<p class="corpo">Exemplo de Tabela: ver Tabela~ .</p></div><div class="page"><h1 class="titulo-pre">TÍTULO DO APÊNDICE</h1>
+<p class="corpo">Elemento opcional. O(s) apêndice(s) são identificados por letras maiúsculas consecutivas, travessão e pelos respectivos títulos. Excepcionalmente utilizam-se letras maiúsculas dobradas, na identificação, quando esgotadas as 23 letras do alfabeto (ABNT, 2005).</p></div><div class="page"><h1 class="titulo-pre">ANEXO A – TÍTULO DO ANEXO</h1>
+<p class="corpo">"Elemento opcional. O(s) anexo(s) são identificados por letras maiúsculas consecutivas, travessão e pelos respectivos títulos. Excepcionalmente utilizam-se letras maiúsculas dobradas, na identificação dos anexos, quando esgotadas as 23 letras do alfabeto" (ABNT, 2005).</p></div>
+
+</body>
+</html>

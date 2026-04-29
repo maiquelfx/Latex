@@ -1,0 +1,852 @@
+# runPDF.py -- Preview HTML da tese PPGC-UFF
+#
+# Uso:
+#     python runPDF.py [pasta_do_projeto]   # padrao: diretorio atual
+#
+# O script le automaticamente tese.tex (e os include/input dele) para
+# descobrir todos os arquivos .tex, extrai metadados e gera preview_tese.html.
+#
+# NAO edite metadados aqui -- tudo vem do seu LaTeX.
+
+import re
+import sys
+from pathlib import Path
+
+# CONFIGURACAO (so mude se sua estrutura de pastas for diferente)
+MAIN_TEX    = "tese.tex"
+OUTPUT_HTML = "preview_tese-final.html"
+
+
+# ==============================================================================
+#  UTILITARIOS LATEX -> TEXTO
+# ==============================================================================
+
+ACCENTS = {
+    r"\'{A}": "A", r"\'{E}": "E", r"\'{I}": "I", r"\'{O}": "O", r"\'{U}": "U",
+    r"\'{a}": "a", r"\'{e}": "e", r"\'{i}": "i", r"\'{o}": "o", r"\'{u}": "u",
+    r"\~{A}": "A", r"\~{O}": "O", r"\~{a}": "a", r"\~{o}": "o",
+    r"\^{A}": "A", r"\^{E}": "E", r"\^{O}": "O",
+    r"\^{a}": "a", r"\^{e}": "e", r"\^{o}": "o",
+    r"\`{A}": "A", r"\`{a}": "a", r"\c{C}": "C", r"\c{c}": "c",
+    r"\'A": "A",   r"\'E": "E",   r"\'I": "I",   r"\'O": "O",   r"\'U": "U",
+    r"\'a": "a",   r"\'e": "e",   r"\'i": "i",   r"\'o": "o",   r"\'u": "u",
+    r"\~a": "a",   r"\~o": "o",   r"\~A": "A",   r"\~O": "O",
+    r"\^a": "a",   r"\^e": "e",   r"\^o": "o",
+    r"\`a": "a",   r"\`A": "A",
+    r"\c c": "c",  r"\c C": "C",
+    r"---": "\u2014", r"--": "\u2013",
+    r"``": "\u201c",  r"''": "\u201d",
+    r"\&": "&amp;",   r"\%": "%", r"\$": "$", r"\ ": " ",
+}
+
+# Agora com acentos UTF-8 reais (para o caso do LaTeX ja ter os caracteres)
+ACCENTS_UTF = {
+    r"\'{A}": "\u00C1", r"\'{E}": "\u00C9", r"\'{I}": "\u00CD",
+    r"\'{O}": "\u00D3", r"\'{U}": "\u00DA",
+    r"\'{a}": "\u00E1", r"\'{e}": "\u00E9", r"\'{i}": "\u00ED",
+    r"\'{o}": "\u00F3", r"\'{u}": "\u00FA",
+    r"\~{A}": "\u00C3", r"\~{O}": "\u00D5",
+    r"\~{a}": "\u00E3", r"\~{o}": "\u00F5",
+    r"\^{A}": "\u00C2", r"\^{E}": "\u00CA", r"\^{O}": "\u00D4",
+    r"\^{a}": "\u00E2", r"\^{e}": "\u00EA", r"\^{o}": "\u00F4",
+    r"\`{A}": "\u00C0", r"\`{a}": "\u00E0",
+    r"\c{C}": "\u00C7", r"\c{c}": "\u00E7",
+    r"\'A": "\u00C1",   r"\'E": "\u00C9",   r"\'I": "\u00CD",
+    r"\'O": "\u00D3",   r"\'U": "\u00DA",
+    r"\'a": "\u00E1",   r"\'e": "\u00E9",   r"\'i": "\u00ED",
+    r"\'o": "\u00F3",   r"\'u": "\u00FA",
+    r"\~a": "\u00E3",   r"\~o": "\u00F5",   r"\~A": "\u00C3", r"\~O": "\u00D5",
+    r"\^a": "\u00E2",   r"\^e": "\u00EA",   r"\^o": "\u00F4",
+    r"\`a": "\u00E0",   r"\`A": "\u00C0",
+    r"---": "\u2014",   r"--": "\u2013",
+    r"``": "\u201C",    r"''": "\u201D",
+    r"\&": "&amp;",     r"\%": "%", r"\$": "$", r"\ ": " ",
+}
+
+NOISE_PATTERNS = [
+    r'\\includegraphics(?:\[[^\]]*\])?\{[^}]*\}',
+    r'\\caption(?:\[[^\]]*\])?\{[^}]*\}',
+    r'\\captionof(?:\[[^\]]*\])?\{[^}]*\}\{[^}]*\}',
+    r'\\label\{[^}]*\}',
+    r'\\ref\{[^}]*\}',
+    r'\\pageref\{[^}]*\}',
+    r'\\(cite|textcite|apud|textapud|Citet|Citep)[a-zA-Z]*(?:\[[^\]]*\])?(?:\{[^}]*\}){1,2}',
+    r'\\acr[a-zA-Z]*\{[^}]*\}',
+    r'\\gls[a-zA-Z]*\{[^}]*\}',
+    r'\\(vspace|hspace)\*?(?:\[[^\]]*\])?\{[^}]*\}',
+    r'\\footnote\{[^}]*\}',
+    r'\\footnotemark(?:\[[^\]]*\])?',
+    r'\\footnotetext(?:\[[^\]]*\])?\{[^}]*\}',
+    r'\\(thispagestyle|pagestyle|pagenumbering|setcounter|addtocounter)\{[^}]*\}(?:\{[^}]*\})?',
+    r'\\(printglossary|tableofcontents|listoffigures|listoftables|printbibliography)[^\n]*',
+    r'\\(cleardoublepage|newpage|clearpage|pagebreak|linebreak)',
+    r'\\(noindent|centering|raggedright|raggedleft)',
+    r'\\rule\{[^}]*\}\{[^}]*\}',
+    r'\\(include|input)\{[^}]*\}',
+    r'\\(bibliography|bibliographystyle|addbibresource)\{[^}]*\}',
+    r'\\(makeglossaries|makenomenclature|printindex)',
+    r'\\(appendix|frontmatter|mainmatter|backmatter)\b',
+    r'\\(protect|relax|expandafter)\b',
+    r'\\index\{[^}]*\}',
+    r'\\url\{[^}]*\}',
+    r'\\\\',
+]
+
+_NOISE_RE   = re.compile('|'.join(NOISE_PATTERNS))
+_HREF_RE    = re.compile(r'\\href\{[^}]*\}\{([^}]*)\}')
+_WRAP_RE    = re.compile(
+    r'\\(?:textbf|textit|emph|texttt|textrm|mbox|underline|textsuperscript'
+    r'|textsubscript|MakeUppercase|uppercase|bf|it|rm|tt)\{([^{}]*)\}'
+)
+_GENERIC_RE = re.compile(r'\\[a-zA-Z]+\*?\{([^{}]*)\}')
+_CMD_RE     = re.compile(r'\\[a-zA-Z]+\*?')
+_DIM_RE     = re.compile(r'\{?[-+]?[0-9]*\.?[0-9]+(?:mm|cm|pt|in|em|ex)\}?')
+_BRACES_RE  = re.compile(r'[{}<>]')
+_OPT_RE     = re.compile(r'\[[a-z!?htbp*]+\]')
+_SPC_RE     = re.compile(r'[ \t]+')
+
+SKIP_CMDS_RE = re.compile(
+    r'\\(usepackage|documentclass|newcommand|renewcommand|providecommand'
+    r'|setcounter|pagenumbering|pagestyle|thispagestyle'
+    r'|tableofcontents|listoffigures|listoftables|printglossary|printbibliography'
+    r'|cleardoublepage|newpage|clearpage|pagebreak|maketitle|makeindex'
+    r'|include\b|input\b|bibliography|bibliographystyle|addbibresource'
+    r'|vspace|hspace|rule|geometry|hypersetup|definecolor|colorlet'
+    r'|setlength|addtolength|linespread|selectfont)'
+)
+
+
+def strip_latex(text: str) -> str:
+    """Remove/converte marcacoes LaTeX para texto limpo."""
+    text = re.sub(r'(?<!\\)%.*', '', text)
+    
+    # --- CORREÇÃO EXPLÍCITA DE GRAFIA ---
+    # Intercepta a omissão do "I" e formatações específicas 
+    text = text.replace(r"NITER\'O", "NITERÓI")
+    text = text.replace(r"Niter\'o", "Niterói")
+    # ------------------------------------
+
+    for k, v in ACCENTS_UTF.items():
+        text = text.replace(k, v)
+    text = _HREF_RE.sub(r'\1', text)
+    text = _NOISE_RE.sub(' ', text)
+    for _ in range(8):
+        prev = text
+        text = _WRAP_RE.sub(r'\1', text)
+        if text == prev:
+            break
+    for _ in range(4):
+        prev = text
+        text = _GENERIC_RE.sub(r'\1', text)
+        if text == prev:
+            break
+    text = _CMD_RE.sub('', text)
+    text = _DIM_RE.sub('', text)
+    text = _BRACES_RE.sub('', text)
+    text = _OPT_RE.sub('', text)
+    text = _SPC_RE.sub(' ', text)
+    return text.strip()
+
+
+# ==============================================================================
+#  DESCOBERTA AUTOMATICA DE ARQUIVOS
+# ==============================================================================
+
+def resolve_tex_path(base: Path, ref: str) -> Path:
+    p = base / ref.strip()
+    if p.suffix == '':
+        p = p.with_suffix('.tex')
+    return p
+
+
+def discover_structure(project_root: Path):
+    # Le tese.tex e extrai pre_files, body_files, pos_files
+    # classificando pelos nomes/caminhos dos include / input.
+    main = project_root / MAIN_TEX
+    if not main.exists():
+        print(f"  AVISO: {MAIN_TEX} nao encontrado em {project_root}")
+        return [], [], []
+
+    raw = main.read_text(encoding='utf-8', errors='replace')
+    raw_clean = re.sub(r'(?<!\\)%.*', '', raw)
+
+    appendix_pos = raw_clean.find(r'\appendix')
+
+    includes = list(re.finditer(r'\\(?:include|input)\{([^}]+)\}', raw_clean))
+
+    PRE_RE = re.compile(
+        r'(pre.?tex|cap0|frontmatter|resumo|abstract|dedicat|agradec'
+        r'|lista|sumario|abreviatur|sigla)',
+        re.IGNORECASE
+    )
+    POS_RE = re.compile(
+        r'(appendix|apendice|ap[eE]ndice|anexo|annex|pos.?tex|backmatter'
+        r'|referencia|bibliog)',
+        re.IGNORECASE
+    )
+
+    pre_files  = []
+    body_files = []
+    pos_files  = []
+
+    for m in includes:
+        ref  = m.group(1).strip()
+        path = resolve_tex_path(project_root, ref)
+        ref_key = ref.lower().replace('/', '_').replace('\\', '_')
+
+        if PRE_RE.search(ref_key):
+            pre_files.append(path)
+        elif POS_RE.search(ref_key):
+            pos_files.append(path)
+        elif appendix_pos != -1 and m.start() > appendix_pos:
+            pos_files.append(path)
+        else:
+            body_files.append(path)
+
+    # Fallback se tese.tex nao usar \include
+    if not pre_files and not body_files:
+        for candidate in ['pre-textuais/cap0.tex', 'pretextuais/cap0.tex', 'cap0.tex']:
+            p = project_root / candidate
+            if p.exists():
+                pre_files.append(p)
+                break
+        for f in sorted(project_root.glob('capitulos/cap*.tex')):
+            body_files.append(f)
+        for f in sorted(project_root.glob('pos-textuais/*.tex')):
+            pos_files.append(f)
+
+    def rel(lst):
+        return [str(f.relative_to(project_root)) for f in lst if f]
+
+    print(f"  Pre-textuais : {rel(pre_files)}")
+    print(f"  Capitulos    : {rel(body_files)}")
+    print(f"  Pos-textuais : {rel(pos_files)}")
+    return pre_files, body_files, pos_files
+
+
+# ==============================================================================
+#  EXTRACAO DE METADADOS
+# ==============================================================================
+
+_PLACEHOLDER_RE = re.compile(
+    r'NOME DO ALUNO|TITULO DO TRABALHO|NOME DO ORIENTADOR|NOME DO COORIENTADOR'
+    r'|<[^>]+>|^ANO$|^MES$',
+    re.IGNORECASE
+)
+
+
+def _clean_meta(val: str) -> str:
+    val = strip_latex(val).strip()
+    return '' if _PLACEHOLDER_RE.search(val) else val
+
+
+def find_meta(project_root: Path) -> dict:
+    """Extrai metadados lendo todos os .tex do projeto."""
+    combined = ''
+    for tex in ([project_root / MAIN_TEX]
+                + list(project_root.rglob('*.tex'))):
+        if tex.exists():
+            combined += tex.read_text(encoding='utf-8', errors='replace') + '\n'
+
+    def get(*keys):
+        for key in keys:
+            for pat in [
+                rf'\\{key}(?:\[[^\]]*\])?\{{([^}}]*)\}}',
+                rf'\\{key}\s*\{{([^}}]*)\}}',
+            ]:
+                m = re.search(pat, combined, re.DOTALL)
+                if m:
+                    v = _clean_meta(m.group(1))
+                    if v:
+                        return v
+        return ''
+
+    def get_year():
+        v = get('data', 'ano', 'year')
+        if v:
+            ym = re.search(r'\b(20\d{2}|19\d{2})\b', v)
+            return ym.group(1) if ym else v
+        return '2026'
+
+    return {
+        'autor':        get('autor', 'author', 'nome')               or 'Autor nao encontrado',
+        'titulo':       get('titulo', 'title', 'thetitle')           or 'Titulo nao encontrado',
+        'subtitulo':    get('subtitulo', 'subtitle')                 or '',
+        'orientador':   get('orientador', 'advisor', 'supervisor')   or '',
+        'coorientador': get('coorientador', 'coadvisor')             or '',
+        'programa':     get('programa', 'program')                   or 'Programa de Pos-Graduacao em Computacao',
+        'grau':         get('grau', 'degree')                        or 'Mestre',
+        'area':         get('area', 'concentracao', 'areaconcentracao') or 'Ciencia da Computacao',
+        'local':        get('local', 'cidade', 'city')               or 'Niterói',
+        'data':         get_year(),
+        'tipo':         get('tipo', 'tipotrabalho')                  or 'Dissertacao de Mestrado',
+        'instituicao':  get('instituicao', 'university')             or 'Universidade Federal Fluminense',
+    }
+
+
+# ==============================================================================
+#  PARSER DE CONTEUDO TEX -> HTML
+# ==============================================================================
+
+SKIP_ENVS = {
+    'figure', 'figure*', 'table', 'table*', 'verbatim', 'lstlisting',
+    'tikzpicture', 'algorithm', 'algorithmic', 'align', 'align*',
+    'equation', 'equation*', 'eqnarray', 'eqnarray*',
+    'tabular', 'tabular*', 'array', 'minipage', 'wrapfigure',
+    'sidewaysfigure', 'sidewaystable', 'longtable',
+}
+CITACAO_ENVS = {'quoting', 'quote', 'quotation'}
+ITEMIZE_ENVS = {'itemize', 'enumerate', 'description', 'compactitem'}
+
+
+class TexParser:
+    def __init__(self, path: Path, is_pre: bool = False):
+        self.path   = path
+        self.is_pre = is_pre
+
+    def parse(self) -> str:
+        if not self.path.exists():
+            return f'<p class="erro">[Nao encontrado: {self.path}]</p>'
+        raw = self.path.read_text(encoding='utf-8', errors='replace')
+        return self._run(raw)
+
+    @staticmethod
+    def _esc(t: str) -> str:
+        return t.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+
+    @staticmethod
+    def _try_title(pattern: str, line: str):
+        m = re.match(pattern, line)
+        return strip_latex(m.group(1)) if m else None
+
+    def _run(self, raw: str) -> str:
+        out        = []
+        env_stack  = []
+        para       = []
+        list_stack = []
+
+        def flush_para():
+            if not para:
+                return
+            txt = strip_latex(' '.join(para)).strip()
+            para.clear()
+            if not txt:
+                return
+            in_citacao = any(e[0] == 'citacao' for e in env_stack)
+            cls = 'texto-citacao' if in_citacao else 'corpo'
+            out.append(f'<p class="{cls}">{self._esc(txt)}</p>')
+
+        def close_list():
+            if not list_stack:
+                return
+            tag, items = list_stack[-1]
+            html = f'<{tag} class="lista">'
+            for it in items:
+                html += f'<li>{self._esc(it)}</li>'
+            html += f'</{tag}>'
+            out.append(html)
+            list_stack.pop()
+
+        for line in raw.split('\n'):
+            s = re.sub(r'(?<!\\)%.*', '', line).strip()
+            if not s:
+                flush_para()
+                continue
+
+            # \begin{env}
+            bm = re.match(r'\\begin\{([^}]+)\}', s)
+            if bm:
+                env      = bm.group(1).strip()
+                skipping = any(e[0] == 'skip' for e in env_stack)
+                if skipping or env in SKIP_ENVS:
+                    env_stack.append(('skip', env))
+                elif env in ITEMIZE_ENVS:
+                    flush_para()
+                    tag = 'ol' if env == 'enumerate' else 'ul'
+                    list_stack.append((tag, []))
+                    env_stack.append(('item', env))
+                elif env == 'resumo':
+                    flush_para()
+                    out.append('<h1 class="titulo-pre">Resumo</h1>')
+                    env_stack.append(('ok', env))
+                elif env == 'abstract':
+                    flush_para()
+                    out.append('<h1 class="titulo-pre">Abstract</h1>')
+                    env_stack.append(('ok', env))
+                elif env in CITACAO_ENVS:
+                    flush_para()
+                    out.append('<div class="citacao-longa">')
+                    env_stack.append(('citacao', env))
+                else:
+                    env_stack.append(('ok', env))
+                continue
+
+            # \end{env}
+            em = re.match(r'\\end\{([^}]+)\}', s)
+            if em:
+                env = em.group(1).strip()
+                flush_para()
+                if list_stack and any(e[1] == env for e in env_stack):
+                    close_list()
+                if env_stack:
+                    top = env_stack.pop()
+                    if top[0] == 'citacao':
+                        out.append('</div>')
+                continue
+
+            if any(e[0] == 'skip' for e in env_stack):
+                continue
+
+            # \item
+            if re.match(r'\\item\b', s) and list_stack:
+                flush_para()
+                txt = strip_latex(re.sub(r'\\item\b', '', s, count=1)).strip()
+                if txt:
+                    list_stack[-1][1].append(txt)
+                continue
+
+            # Titulos
+            t = self._try_title(r'\\chapter\*?\{([^}]+)\}', s)
+            if t is not None:
+                flush_para()
+                cls = 'titulo-pre' if self.is_pre else 'chapter'
+                out.append(f'<h1 class="{cls}">{self._esc(t)}</h1>')
+                continue
+
+            t = self._try_title(r'\\section\*?\{([^}]+)\}', s)
+            if t is not None:
+                flush_para()
+                out.append(f'<h2>{self._esc(t)}</h2>')
+                continue
+
+            t = self._try_title(r'\\subsection\*?\{([^}]+)\}', s)
+            if t is not None:
+                flush_para()
+                out.append(f'<h3>{self._esc(t)}</h3>')
+                continue
+
+            t = self._try_title(r'\\subsubsection\*?\{([^}]+)\}', s)
+            if t is not None:
+                flush_para()
+                out.append(f'<h4>{self._esc(t)}</h4>')
+                continue
+
+            t = self._try_title(r'\\(?:paragraph|subparagraph)\*?\{([^}]+)\}', s)
+            if t is not None:
+                flush_para()
+                out.append(f'<h5>{self._esc(t)}</h5>')
+                continue
+
+            if SKIP_CMDS_RE.match(s):
+                continue
+
+            clean = strip_latex(s)
+            if clean:
+                para.append(clean)
+
+        flush_para()
+        if list_stack:
+            close_list()
+        return '\n'.join(out)
+
+
+# ==============================================================================
+#  CSS
+# ==============================================================================
+
+CSS = r"""
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #525659;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 12pt;
+  line-height: 1.5;
+  color: #000;
+}
+
+/* Aviso */
+.aviso {
+  position: sticky; top: 0; z-index: 999;
+  background: #fff3cd; border-bottom: 2px solid #e6ac00;
+  padding: 6px 16px; text-align: center;
+  font-family: Arial, sans-serif; font-size: 9.5pt;
+}
+.aviso strong { color: #7a5500; }
+.aviso code {
+  background: #f0e0a0; padding: 0 4px;
+  border-radius: 3px; font-size: 8.5pt;
+}
+
+/* Pagina A4 */
+.page {
+  background: white;
+  width: 210mm;
+  min-height: 297mm;
+  margin: 16px auto;
+  box-shadow: 0 3px 10px rgba(0,0,0,.55);
+  padding: 30mm 20mm 20mm 30mm;
+  position: relative;
+}
+
+@media print {
+  body  { background: white; }
+  .aviso { display: none; }
+  .page {
+    margin: 0; box-shadow: none;
+    width: auto; min-height: auto; padding: 0;
+    page-break-after: always;
+  }
+  @page { size: A4; margin: 30mm 20mm 20mm 30mm; }
+}
+
+/* Capa */
+.capa {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: space-between;
+  min-height: 237mm; text-align: center;
+}
+.capa-inst   { font-size: 12pt; font-weight: bold; }
+.capa-autor  { font-size: 12pt; font-weight: bold; margin-top: 60pt; }
+.capa-titulo {
+  font-size: 14pt; font-weight: bold; text-transform: uppercase;
+  margin-top: auto; margin-bottom: auto;
+}
+.capa-local  { font-size: 12pt; }
+
+/* Folha de rosto */
+.rosto {
+  display: flex; flex-direction: column;
+  align-items: center; min-height: 237mm; text-align: center;
+}
+.rosto-autor   { font-weight: bold; font-size: 12pt; }
+.rosto-titulo  { font-weight: bold; font-size: 14pt; text-transform: uppercase; margin: 40pt 0; }
+.rosto-natureza {
+  width: 50%; margin-left: auto; margin-right: 0;
+  text-align: justify; font-size: 11pt; line-height: 1.4;
+}
+.rosto-orientadores { margin-top: 40pt; font-size: 11pt; }
+.rosto-local   { margin-top: auto; font-size: 12pt; }
+
+/* Banca */
+.banca-membro {
+  display: flex; flex-direction: column;
+  align-items: center; margin: 20pt 0;
+}
+.banca-linha { border-top: 1px solid #000; width: 80%; margin-bottom: 4pt; }
+
+/* Titulos pre-textuais */
+h1.titulo-pre {
+  font-size: 14pt; font-weight: bold; font-variant: small-caps;
+  text-align: center; margin-top: 0; margin-bottom: 24pt;
+  page-break-before: always;
+}
+
+/* Capitulos */
+body  { counter-reset: chapter; }
+.page { counter-reset: section subsection subsubsection; }
+
+h1.chapter {
+  font-size: 14pt; font-weight: bold; text-transform: uppercase;
+  text-align: left; margin-top: 0; margin-bottom: 24pt;
+  page-break-before: always;
+  counter-increment: chapter;
+  counter-reset: section;
+}
+h1.chapter::before { content: counter(chapter) "\00a0\00a0"; }
+
+h2 {
+  font-size: 12pt; font-weight: bold;
+  margin-top: 18pt; margin-bottom: 12pt;
+  counter-increment: section;
+  counter-reset: subsection;
+}
+h2::before { content: counter(chapter) "." counter(section) "\00a0\00a0"; }
+
+h3 {
+  font-size: 12pt; font-weight: bold; font-style: italic;
+  margin-top: 14pt; margin-bottom: 10pt;
+  counter-increment: subsection;
+  counter-reset: subsubsection;
+}
+h3::before { content: counter(chapter) "." counter(section) "." counter(subsection) "\00a0\00a0"; }
+
+h4 {
+  font-size: 12pt; font-weight: bold;
+  margin-top: 12pt; margin-bottom: 8pt;
+  counter-increment: subsubsection;
+}
+h4::before {
+  content: counter(chapter) "." counter(section) "."
+           counter(subsection) "." counter(subsubsection) "\00a0\00a0";
+}
+
+h5 { font-size: 12pt; font-weight: bold; margin-top: 10pt; margin-bottom: 6pt; }
+
+/* Paragrafos */
+p.corpo {
+  text-align: justify;
+  text-indent: 1.25cm;
+  margin: 0;
+}
+p.texto-citacao {
+  text-align: justify;
+  font-size: 10pt; line-height: 1.0;
+  text-indent: 0; margin: 0;
+}
+
+/* Citacao longa */
+.citacao-longa {
+  margin-left: 4cm;
+  margin-top: 12pt; margin-bottom: 12pt;
+}
+
+/* Listas */
+ul.lista, ol.lista {
+  margin-left: 1.5cm;
+  margin-top: 6pt; margin-bottom: 6pt;
+}
+ul.lista li, ol.lista li { margin-bottom: 4pt; }
+
+/* Ficha catalografica */
+.ficha-box {
+  border: 1px solid #888; padding: 16pt;
+  margin-top: 180pt; font-size: 10pt; line-height: 1.4;
+}
+
+/* Erro */
+p.erro { color: red; font-style: italic; }
+
+/* Sumario / Listas placeholder */
+.placeholder { color: #888; font-style: italic; text-indent: 0 !important; }
+"""
+
+
+# ==============================================================================
+#  CONSTRUTORES DE PAGINAS FIXAS
+# ==============================================================================
+
+def _e(t: str) -> str:
+    return t.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+
+
+def build_capa(m: dict) -> str:
+    sub = (f'<div style="font-size:12pt;font-weight:bold;margin-top:4pt">'
+           f'{_e(m["subtitulo"])}</div>') if m['subtitulo'] else ''
+    return f"""<div class="page">
+<div class="capa">
+  <div class="capa-inst">{_e(m['instituicao'])}</div>
+  <div class="capa-autor">{_e(m['autor'])}</div>
+  <div>
+    <div class="capa-titulo">{_e(m['titulo'])}</div>
+    {sub}
+  </div>
+  <div class="capa-local">{_e(m['local'])}<br>{_e(m['data'])}</div>
+</div>
+</div>"""
+
+
+def build_rosto(m: dict) -> str:
+    co = f'<br>Coorientador: {_e(m["coorientador"])}' if m['coorientador'] else ''
+    orient = (f'<div class="rosto-orientadores">'
+              f'Orientador: {_e(m["orientador"])}{co}</div>') if m['orientador'] else ''
+    sub = (f'<div style="font-size:12pt;font-weight:bold">{_e(m["subtitulo"])}</div>'
+           ) if m['subtitulo'] else ''
+    return f"""<div class="page">
+<div class="rosto">
+  <div class="rosto-autor">{_e(m['autor'])}</div>
+  <div>
+    <div class="rosto-titulo">{_e(m['titulo'])}</div>
+    {sub}
+  </div>
+  <div class="rosto-natureza">
+    {_e(m['tipo'])} apresentada ao {_e(m['programa'])} da
+    {_e(m['instituicao'])} como requisito parcial para a obtencao do Grau
+    de {_e(m['grau'])} em Computacao.<br><br>
+    Area de concentracao: {_e(m['area'])}.
+  </div>
+  {orient}
+  <div class="rosto-local">{_e(m['local'])}<br>{_e(m['data'])}</div>
+</div>
+</div>"""
+
+
+def build_ficha(m: dict) -> str:
+    return f"""<div class="page">
+<h1 class="titulo-pre">Ficha Catalografica</h1>
+<div class="ficha-box">
+  <p><strong>{_e(m['autor'])}</strong></p>
+  <p style="margin-left:1cm">
+    {_e(m['titulo'])} / {_e(m['autor'])}.
+    &ndash; {_e(m['local'])}, {_e(m['data'])}.
+  </p>
+  <p style="margin-top:8pt">Orientador: {_e(m['orientador']) or '[orientador]'}</p>
+  <p>
+    {_e(m['tipo'])} &ndash; {_e(m['instituicao'])},
+    {_e(m['programa'])}, {_e(m['data'])}.
+  </p>
+  <p style="margin-top:12pt;color:#888;font-size:9pt">
+    [Substituir pelo print da ficha gerada pela Biblioteca da EEIC-UFF]
+  </p>
+</div>
+</div>"""
+
+
+def build_aprovacao(m: dict) -> str:
+    return f"""<div class="page">
+<h1 class="titulo-pre">Folha de Aprovacao</h1>
+<p style="text-align:center"><strong>{_e(m['autor'])}</strong></p>
+<p style="text-align:center;font-weight:bold;text-transform:uppercase;margin:12pt 0">
+  {_e(m['titulo'])}
+</p>
+<p style="margin-left:50%;text-align:justify;font-size:11pt">
+  {_e(m['tipo'])} apresentada ao {_e(m['programa'])} da {_e(m['instituicao'])}
+  como requisito parcial para a obtencao do Grau de {_e(m['grau'])} em Computacao.
+  Area de concentracao: {_e(m['area'])}.
+</p>
+<p style="margin-top:24pt">Aprovada em _____ de {_e(m['data'])}.</p>
+<p style="font-weight:bold;margin-top:24pt">BANCA EXAMINADORA</p>
+<div class="banca-membro">
+  <div class="banca-linha"></div>
+  <p>{_e(m['orientador']) or 'Prof. Nome do Orientador'} &ndash; Orientador,
+     {_e(m['instituicao'])}</p>
+</div>
+<div class="banca-membro">
+  <div class="banca-linha"></div>
+  <p>Prof. Nome do Avaliador &ndash; Instituicao</p>
+</div>
+<div class="banca-membro">
+  <div class="banca-linha"></div>
+  <p>Prof. Nome do Avaliador &ndash; Instituicao</p>
+</div>
+<p style="text-align:center;margin-top:24pt">
+  {_e(m['local'])}<br>{_e(m['data'])}
+</p>
+</div>"""
+
+
+def build_dedicatoria() -> str:
+    return """<div class="page">
+<h1 class="titulo-pre">Dedicatoria</h1>
+<p class="corpo placeholder" style="margin-top:80pt;text-align:right;text-indent:0">
+  [Elemento opcional &mdash; dedicatoria do autor]
+</p>
+</div>"""
+
+
+def build_agradecimentos() -> str:
+    return """<div class="page">
+<h1 class="titulo-pre">Agradecimentos</h1>
+<p class="corpo placeholder">[Elemento opcional &mdash; agradecimentos do autor]</p>
+</div>"""
+
+
+def build_listas() -> str:
+    return """<div class="page">
+<h1 class="titulo-pre">Lista de Figuras</h1>
+<p class="corpo placeholder">[Gerada automaticamente pelo LaTeX]</p>
+</div>
+<div class="page">
+<h1 class="titulo-pre">Lista de Tabelas</h1>
+<p class="corpo placeholder">[Gerada automaticamente pelo LaTeX]</p>
+</div>
+<div class="page">
+<h1 class="titulo-pre">Lista de Abreviaturas e Siglas</h1>
+<p class="corpo placeholder">[Gerada automaticamente pelo glossario LaTeX]</p>
+</div>"""
+
+
+def build_sumario() -> str:
+    return """<div class="page">
+<h1 class="titulo-pre">Sumario</h1>
+<p class="corpo placeholder">
+  [Gerado automaticamente pelo LaTeX &mdash;
+  numeracao de paginas real nao disponivel no preview HTML]
+</p>
+</div>"""
+
+
+# ==============================================================================
+#  FUNCAO PRINCIPAL
+# ==============================================================================
+
+def generate(project_root: Path):
+    project_root = project_root.resolve()
+    print(f"\n  Projeto: {project_root}")
+
+    pre_files, body_files, pos_files = discover_structure(project_root)
+    meta = find_meta(project_root)
+
+    print(f"\n  Autor        : {meta['autor']}")
+    print(f"  Titulo       : {meta['titulo']}")
+    print(f"  Orientador   : {meta['orientador']}")
+    print(f"  Coorientador : {meta['coorientador']}")
+    print(f"  Tipo/Grau    : {meta['tipo']} / {meta['grau']}")
+    print(f"  Local/Ano    : {meta['local']} / {meta['data']}")
+
+    pages = [
+        build_capa(meta),
+        build_rosto(meta),
+        build_ficha(meta),
+        build_aprovacao(meta),
+        build_dedicatoria(),
+        build_agradecimentos(),
+        build_listas(),
+        build_sumario(),
+    ]
+
+    for f in pre_files:
+        content = TexParser(f, is_pre=True).parse()
+        if content.strip():
+            pages.append(f'<div class="page">{content}</div>')
+            print(f"  pre : {f.name}")
+
+    for f in body_files:
+        content = TexParser(f, is_pre=False).parse()
+        if content.strip():
+            pages.append(f'<div class="page">{content}</div>')
+            print(f"  cap : {f.name}")
+
+    for f in pos_files:
+        content = TexParser(f, is_pre=True).parse()
+        if content.strip():
+            pages.append(f'<div class="page">{content}</div>')
+            print(f"  pos : {f.name}")
+
+    titulo_esc = _e(meta['titulo'])
+    html = f"""<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Preview ABNT \u2014 {titulo_esc}</title>
+  <style>
+{CSS}
+  </style>
+</head>
+<body>
+
+<div class="aviso">
+  <strong>\u26a0 Preview ABNT \u2014 PPGC-UFF</strong>
+  &nbsp;|&nbsp;
+  Aproximacao visual de <code>pdflatex tese.tex</code>
+  &nbsp;|&nbsp;
+  Para PDF real: <code>Ctrl+P &rarr; Salvar como PDF</code>
+  (desmarque cabecalho/rodape do navegador)
+</div>
+
+{''.join(pages)}
+
+</body>
+</html>"""
+
+    out = project_root / OUTPUT_HTML
+    out.write_text(html, encoding='utf-8')
+    size_kb = out.stat().st_size // 1024
+    print(f"\n  Preview gerado: {out}  ({size_kb} KB)")
+    print("  Abra no Chrome/Firefox para visualizar ou imprimir como PDF.\n")
+
+
+if __name__ == '__main__':
+    root = Path(sys.argv[1]) if len(sys.argv) > 1 else Path('.')
+    generate(root)

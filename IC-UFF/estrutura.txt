@@ -2,6 +2,7 @@ IC-UFF
 ├── Manuais
 │   ├── biblatex-abnt.pdf
 │   └── biblatex-cheatsheet.pdf
+├── PPGC_UFF.cls
 ├── biblatex-abnt
 │   ├── abnt-ibid.bbx
 │   ├── abnt-ibid.cbx
@@ -10,16 +11,49 @@ IC-UFF
 │   ├── abnt.bbx
 │   ├── abnt.cbx
 │   └── english-abnt.lbx
+├── bibliografia.bib
+├── brazil-abnt.lbx
+├── brazilian-abnt.lbx
 ├── capitulos
+│   ├── cap1.aux
 │   ├── cap1.tex
 │   └── figuras
+│       ├── exefig-eps-converted-to.pdf
 │       ├── exefig.eps
+│       ├── exefig.png
 │       └── ficha_catalografica.png
+├── cvs-id.def
 ├── estrutura.txt
+├── info.txt
+├── manual.docx
 ├── pos-textuais
+│   ├── anexoA.aux
 │   ├── anexoA.tex
+│   ├── appendixA.aux
 │   └── appendixA.tex
 ├── pre-textuais
 │   ├── acronimos.tex
+│   ├── cap0.aux
 │   └── cap0.tex
-└── run_files.py
+├── run_files.py
+├── tese.acn
+├── tese.acr
+├── tese.alg
+├── tese.aux
+├── tese.bbl
+├── tese.bcf
+├── tese.blg
+├── tese.glg
+├── tese.glo
+├── tese.gls
+├── tese.ist
+├── tese.lof
+├── tese.log
+├── tese.lot
+├── tese.out
+├── tese.pdf
+├── tese.run.xml
+├── tese.synctex.gz
+├── tese.tex
+├── tese.toc
+└── texput.log
