@@ -121,14 +121,18 @@ def strip_latex(text: str) -> str:
     text = re.sub(r'(?<!\\)%.*', '', text)
     
     # --- CORREÇÃO EXPLÍCITA DE GRAFIA ---
-    # Intercepta a omissão do "I" e formatações específicas 
     text = text.replace(r"NITER\'O", "NITERÓI")
     text = text.replace(r"Niter\'o", "Niterói")
     # ------------------------------------
 
     for k, v in ACCENTS_UTF.items():
         text = text.replace(k, v)
-    text = _HREF_RE.sub(r'\1', text)
+        
+    # --- PRESERVAÇÃO DE LINKS PARA O HTML ---
+    text = re.sub(r'\\href\{([^}]+)\}\{([^}]+)\}', r'[[HREF:\1|\2]]', text)
+    text = re.sub(r'\\url\{([^}]+)\}', r'[[URL:\1]]', text)
+    # ----------------------------------------
+    
     text = _NOISE_RE.sub(' ', text)
     for _ in range(8):
         prev = text
@@ -158,10 +162,7 @@ def resolve_tex_path(base: Path, ref: str) -> Path:
         p = p.with_suffix('.tex')
     return p
 
-
 def discover_structure(project_root: Path):
-    # Le tese.tex e extrai pre_files, body_files, pos_files
-    # classificando pelos nomes/caminhos dos include / input.
     main = project_root / MAIN_TEX
     if not main.exists():
         print(f"  AVISO: {MAIN_TEX} nao encontrado em {project_root}")
@@ -169,25 +170,13 @@ def discover_structure(project_root: Path):
 
     raw = main.read_text(encoding='utf-8', errors='replace')
     raw_clean = re.sub(r'(?<!\\)%.*', '', raw)
-
     appendix_pos = raw_clean.find(r'\appendix')
-
     includes = list(re.finditer(r'\\(?:include|input)\{([^}]+)\}', raw_clean))
 
-    PRE_RE = re.compile(
-        r'(pre.?tex|cap0|frontmatter|resumo|abstract|dedicat|agradec'
-        r'|lista|sumario|abreviatur|sigla)',
-        re.IGNORECASE
-    )
-    POS_RE = re.compile(
-        r'(appendix|apendice|ap[eE]ndice|anexo|annex|pos.?tex|backmatter'
-        r'|referencia|bibliog)',
-        re.IGNORECASE
-    )
+    PRE_RE = re.compile(r'(pre.?tex|cap0|frontmatter|resumo|abstract|dedicat|agradec|lista|sumario|abreviatur|sigla)', re.IGNORECASE)
+    POS_RE = re.compile(r'(appendix|apendice|ap[eE]ndice|anexo|annex|pos.?tex|backmatter|referencia|bibliog)', re.IGNORECASE)
 
-    pre_files  = []
-    body_files = []
-    pos_files  = []
+    pre_files, body_files, pos_files = [], [], []
 
     for m in includes:
         ref  = m.group(1).strip()
@@ -203,7 +192,6 @@ def discover_structure(project_root: Path):
         else:
             body_files.append(path)
 
-    # Fallback se tese.tex nao usar \include
     if not pre_files and not body_files:
         for candidate in ['pre-textuais/cap0.tex', 'pretextuais/cap0.tex', 'cap0.tex']:
             p = project_root / candidate
@@ -215,9 +203,7 @@ def discover_structure(project_root: Path):
         for f in sorted(project_root.glob('pos-textuais/*.tex')):
             pos_files.append(f)
 
-    def rel(lst):
-        return [str(f.relative_to(project_root)) for f in lst if f]
-
+    def rel(lst): return [str(f.relative_to(project_root)) for f in lst if f]
     print(f"  Pre-textuais : {rel(pre_files)}")
     print(f"  Capitulos    : {rel(body_files)}")
     print(f"  Pos-textuais : {rel(pos_files)}")
@@ -229,36 +215,25 @@ def discover_structure(project_root: Path):
 # ==============================================================================
 
 _PLACEHOLDER_RE = re.compile(
-    r'NOME DO ALUNO|TITULO DO TRABALHO|NOME DO ORIENTADOR|NOME DO COORIENTADOR'
-    r'|<[^>]+>|^ANO$|^MES$',
-    re.IGNORECASE
-)
-
+    r'NOME DO ALUNO|TITULO DO TRABALHO|NOME DO ORIENTADOR|NOME DO COORIENTADOR|<[^>]+>|^ANO$|^MES$', re.IGNORECASE)
 
 def _clean_meta(val: str) -> str:
     val = strip_latex(val).strip()
     return '' if _PLACEHOLDER_RE.search(val) else val
 
-
 def find_meta(project_root: Path) -> dict:
-    """Extrai metadados lendo todos os .tex do projeto."""
     combined = ''
-    for tex in ([project_root / MAIN_TEX]
-                + list(project_root.rglob('*.tex'))):
+    for tex in ([project_root / MAIN_TEX] + list(project_root.rglob('*.tex'))):
         if tex.exists():
             combined += tex.read_text(encoding='utf-8', errors='replace') + '\n'
 
     def get(*keys):
         for key in keys:
-            for pat in [
-                rf'\\{key}(?:\[[^\]]*\])?\{{([^}}]*)\}}',
-                rf'\\{key}\s*\{{([^}}]*)\}}',
-            ]:
+            for pat in [rf'\\{key}(?:\[[^\]]*\])?\{{([^}}]*)\}}', rf'\\{key}\s*\{{([^}}]*)\}}']:
                 m = re.search(pat, combined, re.DOTALL)
                 if m:
                     v = _clean_meta(m.group(1))
-                    if v:
-                        return v
+                    if v: return v
         return ''
 
     def get_year():
@@ -288,13 +263,14 @@ def find_meta(project_root: Path) -> dict:
 #  PARSER DE CONTEUDO TEX -> HTML
 # ==============================================================================
 
+# Tabelas e figuras removidas do SKIP_ENVS para serem processadas
 SKIP_ENVS = {
-    'figure', 'figure*', 'table', 'table*', 'verbatim', 'lstlisting',
-    'tikzpicture', 'algorithm', 'algorithmic', 'align', 'align*',
-     'eqnarray', 'eqnarray*',
-    'tabular', 'tabular*', 'array', 'minipage', 'wrapfigure',
-    'sidewaysfigure', 'sidewaystable', 'longtable',
+    'verbatim', 'lstlisting',
+    'tikzpicture', 'algorithm', 'algorithmic',
+    'array', 'minipage', 'wrapfigure',
+    'sidewaysfigure'
 }
+MATH_ENVS = {'eqnarray', 'eqnarray*', 'align', 'align*'}
 CITACAO_ENVS = {'quoting', 'quote', 'quotation'}
 ITEMIZE_ENVS = {'itemize', 'enumerate', 'description', 'compactitem'}
 
@@ -334,36 +310,131 @@ class TexParser:
                 return
             in_citacao = any(e[0] == 'citacao' for e in env_stack)
             cls = 'texto-citacao' if in_citacao else 'corpo'
-            out.append(f'<p class="{cls}">{self._esc(txt)}</p>')
+            
+            # --- RENDERIZACAO DE LINKS EM HTML ---
+            html_txt = self._esc(txt)
+            html_txt = re.sub(r'\[\[HREF:([^|]+)\|([^\]]+)\]\]', r'<a href="\1" target="_blank" style="color:#0056b3;text-decoration:underline;">\2</a>', html_txt)
+            html_txt = re.sub(r'\[\[URL:([^\]]+)\]\]', r'<a href="\1" target="_blank" style="color:#0056b3;text-decoration:underline;">\1</a>', html_txt)
+            
+            out.append(f'<p class="{cls}">{html_txt}</p>')
 
         def close_list():
-            if not list_stack:
-                return
+            if not list_stack: return
             tag, items = list_stack[-1]
             html = f'<{tag} class="lista">'
-            for it in items:
-                html += f'<li>{self._esc(it)}</li>'
+            for it in items: html += f'<li>{self._esc(it)}</li>'
             html += f'</{tag}>'
             out.append(html)
             list_stack.pop()
+
+        in_eq = False
+        eq_buffer = []
+        in_tab = False
+        tab_buffer = []
+
+        # Pre-processa Equações
+        raw = re.sub(
+            r'\\begin\{equation\}(.*?)\\end\{equation\}',
+            lambda m: f'\n@@EQ@@{m.group(1).strip()}@@END_EQ@@\n',
+            raw,
+            flags=re.DOTALL
+        )
         
-                    # --- CAPTURA EQUACOES (ANTES DO SPLIT) ---
-            raw = re.sub(
-                r'\\begin\{equation\}(.*?)\\end\{equation\}',
-                lambda m: f'\n@@EQ@@{m.group(1)}@@END_EQ@@\n',
-                raw,
-                flags=re.DOTALL
-            )
-            # ----------------------------------------    
+        # Pre-processa Tabelas
+        raw = re.sub(
+            r'\\begin\{tabular\*?\}(?:\[[^\]]*\])?(?:\{[^}]*\})?(.*?)\\end\{tabular\*?\}',
+            lambda m: f'\n@@TAB@@{m.group(1).strip()}@@END_TAB@@\n',
+            raw,
+            flags=re.DOTALL
+        )
+
         for line in raw.split('\n'):
-            s = re.sub(r'(?<!\\)%.*', '', line).strip()
+            if '@@EQ@@' in line or in_eq or '@@TAB@@' in line or in_tab:
+                s = line.strip()
+            else:
+                s = re.sub(r'(?<!\\)%.*', '', line).strip()
+
             # --- RENDER EQUACAO ---
-            if s.startswith('@@EQ@@'):
+            if '@@EQ@@' in s:
                 flush_para()
-                eq = s.replace('@@EQ@@', '').replace('@@END_EQ@@', '').strip()
-                out.append(f'<div class="equation">\\[{eq}\\]</div>')
+                in_eq = True
+                eq_buffer = []
+                s = s.replace('@@EQ@@', '').strip()
+            
+            if in_eq:
+                if '@@END_EQ@@' in s:
+                    s = s.replace('@@END_EQ@@', '').strip()
+                    eq_buffer.append(s)
+                    eq = ' '.join(eq_buffer).strip()
+                    eq_raw = eq 
+                    # Utilizando equation* para nao aparecerem colchetes ou cifroes no HTML
+                    out.append('<div class="equation">\\begin{equation*}\n' + eq_raw + '\n\\end{equation*}</div>')
+                    in_eq = False
+                    eq_buffer = []
+                else:
+                    eq_buffer.append(s)
                 continue
-            # ---------------------
+            # ---------------------------------
+
+            # --- RENDER TABELA HTML ---
+            if '@@TAB@@' in s:
+                flush_para()
+                in_tab = True
+                tab_buffer = []
+                s = s.replace('@@TAB@@', '').strip()
+                
+            if in_tab:
+                if '@@END_TAB@@' in s:
+                    s = s.replace('@@END_TAB@@', '').strip()
+                    tab_buffer.append(s)
+                    tab_content = ' '.join(tab_buffer).strip()
+                    
+                    tab_content = re.sub(r'\\(?:hline|toprule|midrule|bottomrule|cline\{[^}]*\})', '', tab_content)
+                    
+                    html_table = '<div class="tabela-preview"><table class="latex-table"><tbody>'
+                    
+                    rows = re.split(r'\\\\(?:\[[^\]]*\])?', tab_content)
+                    for row in rows:
+                        if not row.strip(): continue
+                        html_table += '<tr>'
+                        cells = re.split(r'(?<!\\)&', row)
+                        for cell in cells:
+                            clean_cell = strip_latex(cell.strip())
+                            html_table += f'<td>{self._esc(clean_cell)}</td>'
+                        html_table += '</tr>'
+                    html_table += '</tbody></table></div>'
+                    
+                    out.append(html_table)
+                    in_tab = False
+                    tab_buffer = []
+                else:
+                    tab_buffer.append(s)
+                continue
+            # ---------------------------------
+
+            # --- RENDERIZAR FIGURAS E LEGENDAS ---
+            img_match = re.search(r'\\includegraphics(?:\[[^\]]*\])?\{([^}]+)\}', s)
+            if img_match:
+                flush_para()
+                img_path = img_match.group(1).strip()
+                img_src = img_path
+                if img_src.lower().endswith('.eps') or img_src.lower().endswith('.pdf'):
+                    img_src = img_src[:-4] + '.png'
+                    
+                out.append(f'<div class="figura-preview"><img src="{img_src}" alt="Figura" onerror="this.onerror=null; this.parentNode.innerHTML += \'<br><small style=color:red>&#9888; Para o preview web exibir esta imagem, salve uma cópia de <b>{img_path}</b> como .png na mesma pasta.</small>\';"></div>')
+                s = re.sub(r'\\includegraphics(?:\[[^\]]*\])?\{[^}]*\}', '', s)
+
+            cap_match = re.search(r'\\caption(?:\[[^\]]*\])?\{([^}]+)\}', s)
+            if cap_match:
+                flush_para()
+                caption_text = cap_match.group(1).strip()
+                label_prefix = 'Tabela' if any(e[1] == 'table' for e in env_stack) else 'Figura'
+                out.append(f'<p class="caption-preview">{label_prefix} &ndash; {self._esc(caption_text)}</p>')
+                s = re.sub(r'\\caption(?:\[[^\]]*\])?\{[^}]*\}', '', s)
+                
+            s = re.sub(r'\\(centering|label\{[^}]*\})', '', s).strip()
+            # --------------------------
+
             if not s:
                 flush_para()
                 continue
@@ -380,6 +451,10 @@ class TexParser:
                     tag = 'ol' if env == 'enumerate' else 'ul'
                     list_stack.append((tag, []))
                     env_stack.append(('item', env))
+                elif env in MATH_ENVS:
+                    flush_para()
+                    out.append(f'<div style="text-align: center; margin: 16pt 0; overflow-x: auto;">\\begin{{{env}}}')
+                    env_stack.append(('math', env))
                 elif env == 'resumo':
                     flush_para()
                     out.append('<h1 class="titulo-pre">Resumo</h1>')
@@ -407,9 +482,15 @@ class TexParser:
                     top = env_stack.pop()
                     if top[0] == 'citacao':
                         out.append('</div>')
+                    elif top[0] == 'math':
+                        out.append(f'\\end{{{env}}}</div>')
                 continue
 
             if any(e[0] == 'skip' for e in env_stack):
+                continue
+            
+            if any(e[0] == 'math' for e in env_stack):
+                out.append(line)
                 continue
 
             # \item
@@ -476,7 +557,6 @@ CSS = r"""
 
 body {
   background: #525659;
-  /* Define a Computer Modern (Latin Modern) como primária, com fallback para Times */
   font-family: 'Latin Modern Roman', 'Times New Roman', Times, serif;
   font-size: 12pt;
   line-height: 1.5;
@@ -635,6 +715,52 @@ ul.lista li, ol.lista li { margin-bottom: 4pt; }
   text-align: center;
   margin: 16pt 0;
   font-size: 12pt;
+}
+
+/* Figuras */
+.figura-preview {
+  text-align: center;
+  margin-top: 24pt;
+  margin-bottom: 8pt;
+}
+.figura-preview img {
+  max-width: 80%;
+  height: auto;
+  border-radius: 4px;
+}
+.caption-preview {
+  text-align: center;
+  font-size: 10pt;
+  margin-top: 0;
+  margin-bottom: 24pt;
+  font-weight: bold;
+}
+
+/* Tabelas */
+.tabela-preview {
+  display: flex;
+  justify-content: center;
+  margin-top: 16pt;
+  margin-bottom: 16pt;
+  overflow-x: auto;
+}
+.latex-table {
+  border-collapse: collapse;
+  font-size: 11pt;
+  margin: 0 auto;
+  /* Cria as bordas espessas de topo e base (estilo booktabs/ABNT) */
+  border-top: 2px solid #000;
+  border-bottom: 2px solid #000;
+}
+/* Cria a linha que separa o cabeçalho dos dados */
+.latex-table tr:first-child {
+  border-bottom: 1px solid #000;
+}
+.latex-table td, .latex-table th {
+  /* Remove as bordas verticais e a grade interna */
+  border: none;
+  padding: 8px 18px;
+  text-align: center;
 }
 
 /* Erro */
@@ -850,7 +976,7 @@ def generate(project_root: Path):
 window.MathJax = {{
   tex: {{
     inlineMath: [['$', '$'], ['\\(', '\\)']],
-    displayMath: [['\\[', '\\]']]
+    displayMath: [['$$', '$$'], ['\\[', '\\]']]
   }}
 }};
 </script>

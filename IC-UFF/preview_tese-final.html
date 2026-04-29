@@ -12,7 +12,6 @@
 
 body {
   background: #525659;
-  /* Define a Computer Modern (Latin Modern) como primária, com fallback para Times */
   font-family: 'Latin Modern Roman', 'Times New Roman', Times, serif;
   font-size: 12pt;
   line-height: 1.5;
@@ -173,6 +172,52 @@ ul.lista li, ol.lista li { margin-bottom: 4pt; }
   font-size: 12pt;
 }
 
+/* Figuras */
+.figura-preview {
+  text-align: center;
+  margin-top: 24pt;
+  margin-bottom: 8pt;
+}
+.figura-preview img {
+  max-width: 80%;
+  height: auto;
+  border-radius: 4px;
+}
+.caption-preview {
+  text-align: center;
+  font-size: 10pt;
+  margin-top: 0;
+  margin-bottom: 24pt;
+  font-weight: bold;
+}
+
+/* Tabelas */
+.tabela-preview {
+  display: flex;
+  justify-content: center;
+  margin-top: 16pt;
+  margin-bottom: 16pt;
+  overflow-x: auto;
+}
+.latex-table {
+  border-collapse: collapse;
+  font-size: 11pt;
+  margin: 0 auto;
+  /* Cria as bordas espessas de topo e base (estilo booktabs/ABNT) */
+  border-top: 2px solid #000;
+  border-bottom: 2px solid #000;
+}
+/* Cria a linha que separa o cabeçalho dos dados */
+.latex-table tr:first-child {
+  border-bottom: 1px solid #000;
+}
+.latex-table td, .latex-table th {
+  /* Remove as bordas verticais e a grade interna */
+  border: none;
+  padding: 8px 18px;
+  text-align: center;
+}
+
 /* Erro */
 p.erro { color: red; font-style: italic; }
 
@@ -184,7 +229,7 @@ p.erro { color: red; font-style: italic; }
 window.MathJax = {
   tex: {
     inlineMath: [['$', '$'], ['\(', '\)']],
-    displayMath: [['\[', '\]']]
+    displayMath: [['$$', '$$'], ['\[', '\]']]
   }
 };
 </script>
@@ -307,6 +352,8 @@ window.MathJax = {
 <p class="corpo">NITERÓI</p>
 <p class="corpo">2026</p>
 <p class="corpo">Tese de Doutorado OU Dissertação de Mestrado apresentada ao Programa de Pós-Graduação em Computação da Universidade Federal Fluminense como requisito parcial para a obtenção do Grau de Doutor ou Mestre em Computação. Área de concentração: ÁREA DE CONCENTRAÇÃO.</p>
+<div class="figura-preview"><img src="capitulos/figuras/ficha_catalografica.png" alt="Figura" onerror="this.onerror=null; this.parentNode.innerHTML += '<br><small style=color:red>&#9888; Para o preview web exibir esta imagem, salve uma cópia de <b>capitulos/figuras/ficha_catalografica.png</b> como .png na mesma pasta.</small>';"></div>
+<p class="caption-preview">Figura &ndash; Local da ficha catalográfica</p>
 <p class="corpo">NOME DO ALUNO</p>
 <p class="corpo">TÍTULO DO TRABALHO</p>
 <p class="corpo">Aprovada em MES de ANO.</p>
@@ -325,9 +372,11 @@ window.MathJax = {
 <p class="corpo">Keywords: Palavras representativas do conteúdo do trabalho, isto é, palavras-chave e/ou descritores, na língua (ABNT, 2005).</p></div><div class="page"><h1 class="chapter">Introdução</h1>
 <p class="corpo">Deve apresentar uma visão global da pesquisa, incluindo: breve histórico, importância e justificativa da escolha do tema, delimitações do assunto, formulação de hipóteses, objetivos da pesquisa e estrutura do trabalho.</p>
 <p class="corpo">Este é o primeiro capítulo, apresentamos abaixo as informações de configuração mais utilizadas</p>
-<p class="corpo">[E = mc^2]</p>
+<div class="equation">\begin{equation*}
+[E = mc^2]
+\end{equation*}</div>
 <h2>Opções de Citação</h2>
-<p class="corpo">Fonte dos dados sobre citação direta e indireta do site , autora</p>
+<p class="corpo">Fonte dos dados sobre citação direta e indireta do site <a href="https://www.tecmundo.com.br/tutorial/834-aprenda-a-usar-as-normas-da-abnt-citacao-2-de-4-.htm" target="_blank" style="color:#0056b3;text-decoration:underline;">https://www.tecmundo.com.br/tutorial/834-aprenda-a-usar-as-normas-da-abnt-citacao-2-de-4-.htm</a>, autora</p>
 <p class="corpo">São comandos de citação deste template usando o pacote abntex2cite:</p>
 <p class="corpo">textcite retorna por exemplo:</p>
 <p class="corpo">textcite[n de pag.] retorna por exemplo uma citação com a pagina de referencia:</p>
@@ -364,9 +413,13 @@ window.MathJax = {
 <h2>Figuras</h2>
 <p class="corpo">As figuras podem estar centralizadas ou dependerá da forma de escrita do texto.</p>
 <p class="corpo">Exemplo de Figura: Ver Figura~ .</p>
+<div class="figura-preview"><img src="capitulos/figuras/exefig.png" alt="Figura" onerror="this.onerror=null; this.parentNode.innerHTML += '<br><small style=color:red>&#9888; Para o preview web exibir esta imagem, salve uma cópia de <b>capitulos/figuras/exefig.eps</b> como .png na mesma pasta.</small>';"></div>
+<p class="caption-preview">Figura &ndash; Exemplo de figura</p>
 <h2>Tabelas</h2>
-<p class="corpo">Pode-se utilizar um gerador de tabelas on-line, que agiliza o processo de escrita. Como exemplo temos o site .</p>
-<p class="corpo">Exemplo de Tabela: ver Tabela~ .</p></div><div class="page"><h1 class="titulo-pre">TÍTULO DO APÊNDICE</h1>
+<p class="corpo">Pode-se utilizar um gerador de tabelas on-line, que agiliza o processo de escrita. Como exemplo temos o site <a href="https://www.tablesgenerator.com/" target="_blank" style="color:#0056b3;text-decoration:underline;">https://www.tablesgenerator.com/</a>.</p>
+<p class="corpo">Exemplo de Tabela: ver Tabela~ .</p>
+<p class="caption-preview">Tabela &ndash; Exemplo de tabela</p>
+<div class="tabela-preview"><table class="latex-table"><tbody><tr><td>Dado 1</td><td>Percentual</td></tr><tr><td>Tipo 1</td><td>0,6</td></tr><tr><td>Tipo 2</td><td>0,8</td></tr><tr><td>Tipo 3</td><td>1,0</td></tr><tr><td>Tipo 4</td><td>0,3</td></tr></tbody></table></div></div><div class="page"><h1 class="titulo-pre">TÍTULO DO APÊNDICE</h1>
 <p class="corpo">Elemento opcional. O(s) apêndice(s) são identificados por letras maiúsculas consecutivas, travessão e pelos respectivos títulos. Excepcionalmente utilizam-se letras maiúsculas dobradas, na identificação, quando esgotadas as 23 letras do alfabeto (ABNT, 2005).</p></div><div class="page"><h1 class="titulo-pre">ANEXO A – TÍTULO DO ANEXO</h1>
 <p class="corpo">"Elemento opcional. O(s) anexo(s) são identificados por letras maiúsculas consecutivas, travessão e pelos respectivos títulos. Excepcionalmente utilizam-se letras maiúsculas dobradas, na identificação dos anexos, quando esgotadas as 23 letras do alfabeto" (ABNT, 2005).</p></div>
 
