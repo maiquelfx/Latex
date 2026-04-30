@@ -90,14 +90,20 @@ body {
 
 /* Titulos pre-textuais */
 h1.titulo-pre {
-  font-size: 14pt; font-weight: bold; font-variant: small-caps;
-  text-align: center; margin-top: 0; margin-bottom: 24pt;
+  font-size: 13pt;
+  font-weight: bold;
+  font-variant: small-caps;
+  font-family: 'Latin Modern Roman', 'Times New Roman', serif;
+  letter-spacing: 0.03em;
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 24pt;
   page-break-before: always;
 }
 
 /* Capitulos */
-body  { counter-reset: chapter; }
-.page { counter-reset: section subsection subsubsection; }
+body  { counter-reset: chapter section subsection subsubsection; }
+.page { }
 
 h1.chapter {
   font-size: 14pt; font-weight: bold; text-transform: uppercase;
@@ -107,6 +113,13 @@ h1.chapter {
   counter-reset: section;
 }
 h1.chapter::before { content: counter(chapter) "\00a0\00a0"; }
+
+h1.chapter + p.corpo,
+h2 + p.corpo,
+h3 + p.corpo,
+h4 + p.corpo {
+  text-indent: 0;
+}
 
 h2 {
   font-size: 12pt; font-weight: bold;
@@ -217,6 +230,42 @@ ul.lista li, ol.lista li { margin-bottom: 4pt; }
   padding: 8px 18px;
   text-align: center;
 }
+.page-body {
+  position: relative;
+}
+.page-body::after {
+  content: attr(data-page);
+  position: absolute;
+  top: 10mm;
+  right: 20mm;
+  font-size: 12pt;
+}
+
+/* Verbatim / codigo */
+pre.verbatim, pre.lstlisting, pre.algorithm {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 9pt;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-left: 3px solid #888;
+  padding: 8pt 10pt;
+  margin: 12pt 0 12pt 1.25cm;
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.4;
+}
+
+/* Footnote inline */
+p.corpo .footnote-inline {
+  font-size: 9pt;
+  color: #444;
+  vertical-align: super;
+}
+
+/* Citacoes */
+cite-ref {
+  font-variant: small-caps;
+}
 
 /* Erro */
 p.erro { color: red; font-style: italic; }
@@ -249,7 +298,10 @@ window.MathJax = {
 
 <div class="page">
 <div class="capa">
-  <div class="capa-inst">UNIVERSIDADE FEDERAL FLUMINENSE</div>
+  <div>
+    <div class="capa-inst">UNIVERSIDADE FEDERAL FLUMINENSE</div>
+    <div class="capa-inst">Programa de Pos-Graduacao em Computacao</div>
+  </div>
   <div class="capa-autor">MAIQUEL E SILVA GOMES</div>
   <div>
     <div class="capa-titulo">FRAMEWORK COM INTELIGÊNCIA ARTIFICIAL PARA MODELAGEM SEMÂNTICA DE PROCESSOS DE NEGÓCIO EM BPMN A PARTIR DE LINGUAGEM NATURAL</div>
@@ -266,9 +318,9 @@ window.MathJax = {
   </div>
   <div class="rosto-natureza">
     Dissertacao de Mestrado apresentada ao Programa de Pos-Graduacao em Computacao da
-    UNIVERSIDADE FEDERAL FLUMINENSE como requisito parcial para a obtencao do Grau
+    UNIVERSIDADE FEDERAL FLUMINENSE como requisito parcial para a obtenção do Grau
     de Mestre em Computacao.<br><br>
-    Area de concentracao: Ciencia da Computacao.
+    Área de concentração: Ciencia da Computacao.
   </div>
   <div class="rosto-orientadores">Orientador: José Viterbo Filho<br>Coorientador: Gyslla Vasconcelos</div>
   <div class="rosto-local">NITERÓI<br>2026</div>
@@ -298,8 +350,8 @@ window.MathJax = {
 </p>
 <p style="margin-left:50%;text-align:justify;font-size:11pt">
   Dissertacao de Mestrado apresentada ao Programa de Pos-Graduacao em Computacao da UNIVERSIDADE FEDERAL FLUMINENSE
-  como requisito parcial para a obtencao do Grau de Mestre em Computacao.
-  Area de concentracao: Ciencia da Computacao.
+  como requisito parcial para a obtenção do Grau de Mestre em Computação.
+  Área de concentração: Ciencia da Computacao.
 </p>
 <p style="margin-top:24pt">Aprovada em _____ de 2026.</p>
 <p style="font-weight:bold;margin-top:24pt">BANCA EXAMINADORA</p>
@@ -310,41 +362,45 @@ window.MathJax = {
 </div>
 <div class="banca-membro">
   <div class="banca-linha"></div>
-  <p>Prof. Nome do Avaliador &ndash; Instituicao</p>
+  <p>Prof. &lt;NOME DO AVALIADOR&gt; &ndash; &lt;INSTITUI&Ccedil;&Atilde;O&gt;</p>
 </div>
 <div class="banca-membro">
   <div class="banca-linha"></div>
-  <p>Prof. Nome do Avaliador &ndash; Instituicao</p>
+  <p>Prof. &lt;NOME DO AVALIADOR&gt; &ndash; &lt;INSTITUI&Ccedil;&Atilde;O&gt;</p>
 </div>
+<div class="banca-membro">
+  <div class="banca-linha"></div>
+  <p>Prof. &lt;NOME DO AVALIADOR&gt; &ndash; &lt;INSTITUI&Ccedil;&Atilde;O&gt;</p>
+</div>>
 <p style="text-align:center;margin-top:24pt">
   NITERÓI<br>2026
 </p>
 </div><div class="page">
-<h1 class="titulo-pre">Dedicatoria</h1>
-<p class="corpo placeholder" style="margin-top:80pt;text-align:right;text-indent:0">
-  [Elemento opcional &mdash; dedicatoria do autor]
-</p>
-</div><div class="page">
-<h1 class="titulo-pre">Agradecimentos</h1>
-<p class="corpo placeholder">[Elemento opcional &mdash; agradecimentos do autor]</p>
-</div><div class="page">
 <h1 class="titulo-pre">Lista de Figuras</h1>
-<p class="corpo placeholder">[Gerada automaticamente pelo LaTeX]</p>
+<p class="corpo placeholder">[Lista vazia]</p>
 </div>
 <div class="page">
 <h1 class="titulo-pre">Lista de Tabelas</h1>
-<p class="corpo placeholder">[Gerada automaticamente pelo LaTeX]</p>
+<p class="corpo placeholder">[Lista vazia]</p>
 </div>
 <div class="page">
 <h1 class="titulo-pre">Lista de Abreviaturas e Siglas</h1>
-<p class="corpo placeholder">[Gerada automaticamente pelo glossario LaTeX]</p>
+<table style="font-size:11pt;border-collapse:collapse;margin-top:24pt;margin-left:0"><tr><td style="width:80pt;font-weight:bold;vertical-align:top;padding-bottom:4pt">ACR</td><td style="vertical-align:top;padding-bottom:4pt">Acronimos</td></tr><tr><td style="width:80pt;font-weight:bold;vertical-align:top;padding-bottom:4pt">ONU</td><td style="vertical-align:top;padding-bottom:4pt">Organização das Nações Unidas</td></tr></table>
 </div><div class="page">
-<h1 class="titulo-pre">Sumario</h1>
-<p class="corpo placeholder">
-  [Gerado automaticamente pelo LaTeX &mdash;
-  numeracao de paginas real nao disponivel no preview HTML]
-</p>
-</div><div class="page"><p class="corpo">ONUONUOrganização das Nações Unidas ACRACRAcronimos</p></div><div class="page"><p class="corpo">MAIQUEL E SILVA GOMES</p>
+<h1 class="titulo-pre">Sumário</h1>
+<div style="display:flex;align-items:baseline;margin-left:0pt;margin-bottom:6pt;font-weight:bold"><span style="font-size:11pt">1  Introdução</span><span style="font-size:11pt;min-width:24pt;text-align:right;color:#00008B">12</span></div>
+<div style="display:flex;align-items:baseline;margin-left:16pt;margin-bottom:3pt;font-weight:normal"><span style="font-size:11pt">1.1  Opções de Citação</span><span style="flex:1;border-bottom:1px dotted #000;margin:0 4pt 3pt 4pt;height:1em;display:inline-block"></span><span style="font-size:11pt;min-width:24pt;text-align:right;color:#00008B">12</span></div>
+<div style="display:flex;align-items:baseline;margin-left:32pt;margin-bottom:3pt;font-weight:normal"><span style="font-size:11pt">1.1.1  Citação direta</span><span style="flex:1;border-bottom:1px dotted #000;margin:0 4pt 3pt 4pt;height:1em;display:inline-block"></span><span style="font-size:11pt;min-width:24pt;text-align:right;color:#00008B">12</span></div>
+<div style="display:flex;align-items:baseline;margin-left:32pt;margin-bottom:3pt;font-weight:normal"><span style="font-size:11pt">1.1.2  Citação Indireta</span><span style="flex:1;border-bottom:1px dotted #000;margin:0 4pt 3pt 4pt;height:1em;display:inline-block"></span><span style="font-size:11pt;min-width:24pt;text-align:right;color:#00008B">13</span></div>
+<div style="display:flex;align-items:baseline;margin-left:32pt;margin-bottom:3pt;font-weight:normal"><span style="font-size:11pt">1.1.3  O comando apud</span><span style="flex:1;border-bottom:1px dotted #000;margin:0 4pt 3pt 4pt;height:1em;display:inline-block"></span><span style="font-size:11pt;min-width:24pt;text-align:right;color:#00008B">13</span></div>
+<div style="display:flex;align-items:baseline;margin-left:48pt;margin-bottom:3pt;font-weight:normal"><span style="font-size:11pt">1.1.3.1   Apud on line</span><span style="flex:1;border-bottom:1px dotted #000;margin:0 4pt 3pt 4pt;height:1em;display:inline-block"></span><span style="font-size:11pt;min-width:24pt;text-align:right;color:#00008B">14</span></div>
+<div style="display:flex;align-items:baseline;margin-left:16pt;margin-bottom:3pt;font-weight:normal"><span style="font-size:11pt">1.2  Siglas e Abreviaturas</span><span style="flex:1;border-bottom:1px dotted #000;margin:0 4pt 3pt 4pt;height:1em;display:inline-block"></span><span style="font-size:11pt;min-width:24pt;text-align:right;color:#00008B">15</span></div>
+<div style="display:flex;align-items:baseline;margin-left:16pt;margin-bottom:3pt;font-weight:normal"><span style="font-size:11pt">1.3  Figuras</span><span style="flex:1;border-bottom:1px dotted #000;margin:0 4pt 3pt 4pt;height:1em;display:inline-block"></span><span style="font-size:11pt;min-width:24pt;text-align:right;color:#00008B">15</span></div>
+<div style="display:flex;align-items:baseline;margin-left:16pt;margin-bottom:3pt;font-weight:normal"><span style="font-size:11pt">1.4  Tabelas</span><span style="flex:1;border-bottom:1px dotted #000;margin:0 4pt 3pt 4pt;height:1em;display:inline-block"></span><span style="font-size:11pt;min-width:24pt;text-align:right;color:#00008B">15</span></div>
+<div style="display:flex;align-items:baseline;margin-left:0pt;margin-bottom:6pt;font-weight:bold"><span style="font-size:11pt">REFERÊNCIAS</span><span style="font-size:11pt;min-width:24pt;text-align:right;color:#00008B">16</span></div>
+<div style="display:flex;align-items:baseline;margin-left:0pt;margin-bottom:6pt;font-weight:bold"><span style="font-size:11pt">Apêndice A -$\!$- TÍTULO DO APÊNDICE</span><span style="font-size:11pt;min-width:24pt;text-align:right;color:#00008B">17</span></div>
+<div style="display:flex;align-items:baseline;margin-left:0pt;margin-bottom:6pt;font-weight:bold"><span style="font-size:11pt">Apêndice B -$\!$- ANEXO A – TÍTULO DO ANEXO</span><span style="font-size:11pt;min-width:24pt;text-align:right;color:#00008B">18</span></div>
+</div><div class="page page-body" data-page="13"><p class="corpo">ONUONUOrganização das Nações Unidas ACRACRAcronimos</p></div><div class="page page-body" data-page="14"><p class="corpo">MAIQUEL E SILVA GOMES</p>
 <p class="corpo">FRAMEWORK COM INTELIGÊNCIA ARTIFICIAL PARA MODELAGEM SEMÂNTICA DE PROCESSOS DE NEGÓCIO EM BPMN A PARTIR DE LINGUAGEM NATURAL</p>
 <p class="corpo">UNIVERSIDADE FEDERAL FLUMINENSE</p>
 <p class="corpo">José Viterbo Filho</p>
@@ -356,16 +412,18 @@ window.MathJax = {
 <p class="caption-preview">Figura &ndash; Local da ficha catalográfica</p>
 <p class="corpo">NOME DO ALUNO</p>
 <p class="corpo">TÍTULO DO TRABALHO</p>
+<p class="corpo">Tese de Doutorado ou Dissertação de Mestrado apresentada ao Programa de Pós-Graduação em Computação da Universidade Federal Fluminense como requisito parcial para a obtenção do Grau de Doutor ou Mestre em Computação. Área de concentração: ÁREA DE CONCENTRAÇÃO.</p>
 <p class="corpo">Aprovada em MES de ANO.</p>
 <p class="corpo">BANCA EXAMINADORA Prof. NOME do ORIENTADOR - Orientador, UFF Prof. NOME DO AVALIADOR, INSTITUIÇÃO Prof. NOME DO AVALIADOR, INSTITUIÇÃO Prof. NOME DO AVALIADOR, INSTITUIÇÃO Prof. NOME DO AVALIADOR, INSTITUIÇÃO</p>
 <p class="corpo">Niterói</p>
 <p class="corpo">ANO</p>
-<p class="corpo">Dedicatória(s): Elemento opcional onde o autor presta homenagem ou dedica seu trabalho (ABNT, 2005).</p>
-<p class="corpo">Vida longa e próspera! (Spock) “Homenagem a Leonard Nimoy”</p>
+<p class="corpo">Aos meus pais, pelo amor incondicional e pela crença inabalável em cada passo desta jornada. [] À minha orientadora e ao meu orientador, pela generosidade intelectual e pela confiança depositada. [] “A lógica levará você de A a B. A imaginação levará você a qualquer lugar.” — Albert Einstein</p>
 <p class="corpo">Agradecimentos Elemento opcional, colocado após a dedicatória (ABNT, 2005). Ao meu orientador e minha orientadora, que me mostraram os caminhos a serem seguidos e pela confiança depositada.</p>
+</div><div class="page">
 <h1 class="titulo-pre">Resumo</h1>
 <p class="corpo">Elemento obrigatório, constituído de uma sequência de frases concisas e objetivas e não de uma simples enumeração de tópicos, não ultrapassando 500 palavras ABNT NBR 6028:2003.</p>
 <p class="corpo">Palavras-chave: Palavras representativas do conteúdo do trabalho, isto é, palavras-chave e/ou descritores, conforme a ABNT NBR 6028:2003.</p>
+</div><div class="page">
 <h1 class="titulo-pre">Abstract</h1>
 <p class="corpo">Elemento obrigatório, em língua estrangeira, com as mesmas características do resumo em língua vernácula (ABNT, 2005).</p>
 <p class="corpo">O resumo deve ser redigido na terceira pessoa do singular, com verbo na voz ativa, não ultrapassando uma página ou 500 palavras, segundo a ABNT NBR 6028). Evitando-se ouso de parágrafos no meio do resumo, assim como fórmulas, equações e símbolos. Iniciar o resumo situando o trabalho no contexto geral, apresentar os objetivos, descrever a metodologia utilizada, relatar a contribuição própria, comentar os resultados obtidos e finalmente apresentaras conclusões mais importantes do trabalho.</p>
@@ -376,48 +434,56 @@ window.MathJax = {
 [E = mc^2]
 \end{equation*}</div>
 <h2>Opções de Citação</h2>
-<p class="corpo">Fonte dos dados sobre citação direta e indireta do site <a href="https://www.tecmundo.com.br/tutorial/834-aprenda-a-usar-as-normas-da-abnt-citacao-2-de-4-.htm" target="_blank" style="color:#0056b3;text-decoration:underline;">https://www.tecmundo.com.br/tutorial/834-aprenda-a-usar-as-normas-da-abnt-citacao-2-de-4-.htm</a>, autora</p>
+<p class="corpo">Fonte dos dados sobre citação direta e indireta do site <a href="https://www.tecmundo.com.br/tutorial/834-aprenda-a-usar-as-normas-da-abnt-citacao-2-de-4-.htm" target="_blank" style="color:#0056b3;text-decoration:underline;">https://www.tecmundo.com.br/tutorial/834-aprenda-a-usar-as-normas-da-abnt-citacao-2-de-4-.htm</a>, autora Xavier (2020)</p>
 <p class="corpo">São comandos de citação deste template usando o pacote abntex2cite:</p>
-<p class="corpo">textcite retorna por exemplo:</p>
-<p class="corpo">textcite[n de pag.] retorna por exemplo uma citação com a pagina de referencia:</p>
-<p class="corpo">cite retorna por exemplo:</p>
-<p class="corpo">cite[n de pag.] retorna por exemplo uma citação com a pagina de referencia:</p>
+<p class="corpo">textcite retorna por exemplo: Kitchenham (2009)</p>
+<p class="corpo">textcite[n de pag.] retorna por exemplo uma citação com a pagina de referencia: Kitchenham (2009)</p>
+<p class="corpo">cite retorna por exemplo: (KITCHENHAM, 2009)</p>
+<p class="corpo">cite[n de pag.] retorna por exemplo uma citação com a pagina de referencia: (KITCHENHAM, 2009, p.20)</p>
 <p class="corpo">Obs: para as aspas ficarem corretas usar no inicio 2 crase “ e no final 2 apóstrofos ”</p>
 <h3>Citação direta</h3>
-<p class="corpo">Referente as citações diretas existem 2 formas, sendo que os textos devem estar sempre entre aspas (“ texto”) “a citação direta é a transcrição textual fiel de parte de um conteúdo de uma obra” . Como os exemplos neste paragrafo onde “a chamada pelo nome do autor, quando feita no final da citação, deve apresentar-se entre parênteses, contendo o sobrenome do autor em letra maiúscula, seguido pelo ano de publicação e página em que o texto se encontra” .</p>
-<p class="corpo">Também existe a citação direta quando o o autor está no inicio da citação segundo “Assim, o sobrenome do autor deve ser digitado normalmente, com a primeira letra em maiúscula e as demais em minúsculo, seguido do ano e página em que o texto se encontra, sendo estas informações apesentadas entre parênteses”.</p>
+<p class="corpo">Referente as citações diretas existem 2 formas, sendo que os textos devem estar sempre entre aspas (“ texto”) “a citação direta é a transcrição textual fiel de parte de um conteúdo de uma obra” (XAVIER, 2020). Como os exemplos neste paragrafo onde “a chamada pelo nome do autor, quando feita no final da citação, deve apresentar-se entre parênteses, contendo o sobrenome do autor em letra maiúscula, seguido pelo ano de publicação e página em que o texto se encontra” (XAVIER, 2020).</p>
+<p class="corpo">Também existe a citação direta quando o o autor está no inicio da citação segundo Xavier (2020) “Assim, o sobrenome do autor deve ser digitado normalmente, com a primeira letra em maiúscula e as demais em minúsculo, seguido do ano e página em que o texto se encontra, sendo estas informações apesentadas entre parênteses”.</p>
 <p class="corpo">Se a citação direta for com mais de 03 linhas há uma configuração específica.</p>
-<p class="corpo">Conforme descreve :</p>
+<p class="corpo">Conforme descreve Xavier (2020):</p>
 <div class="citacao-longa">
 <p class="texto-citacao">As citações com mais de três linhas devem ter um tipo de destaque diferente: é necessário reduzir o tamanho da fonte, podendo ser para 10 ou 11 e também é preciso aplicar um recuo de em relação à margem esquerda — selecione o texto e movimente os marcadores, localizado na régua do Word até o número 4, assim, todo o seu texto ficará com o recuo exigido pelas normas (veja a imagem ao lado). Ao final, a citação com mais de três linhas terá a seguinte apresentação — observe que ela não tem aspas.</p>
 </div>
 <h3>Citação Indireta</h3>
-<p class="corpo">Escreve com um monte de citações diretas deixa o texto muito carregado de aspas (“ ”). Nesta situação pode-se chegar a conclusão que não se deseja escrever o texto com as palavras exatas do autor, tornando assim o texto mais fluido. Para isso pode usar o texto de lido como base e escrever com suas palavras .</p>
-<p class="corpo">Tantos as citações diretas quanto as indiretas podem conter mais de um autor, como por exemplo, . Essa forma de citação também pode estar no inicio da conforme as citações pode conter mais de uma referencia no inicio da frase.</p>
+<p class="corpo">Escreve com um monte de citações diretas deixa o texto muito carregado de aspas (“ ”). Nesta situação pode-se chegar a conclusão que não se deseja escrever o texto com as palavras exatas do autor, tornando assim o texto mais fluido. Para isso pode usar o texto de lido como base e escrever com suas palavras (XAVIER, 2020).</p>
+<p class="corpo">Tantos as citações diretas quanto as indiretas podem conter mais de um autor, como por exemplo, (XAVIER, 2020; DA, 2005). Essa forma de citação também pode estar no inicio da conforme Xavier (2020); Da (2005) as citações pode conter mais de uma referencia no inicio da frase.</p>
 <h3>O comando apud</h3>
 <p class="corpo">A citação apud ocorre quando você cita algum autor através de outra obra, sem ter consultado-a propriamente. Neste caso a citação é feita da seguinte forma:</p>
 <p class="corpo">A frase original vem de ABC, mas você leu em YYY, não achou o texto original de ABC, então faz um apud, neste comando primeiro vem antes vem o autor original (ABC) e depois quem citou (YYY)</p>
 <p class="corpo">$ apud\_citado\_no\_material\_lido material\_lido$</p>
-<p class="corpo">Sobre a circulação geral da atmosfera pode-se dizer que os ventos do nortenão movem moinhos .</p>
-<p class="corpo">Com citação da pagina de origem .</p>
-<p class="corpo">Nesse caso, na bibliografia só constará a obra consultada e não aquele referenciada pela obra. Para que isso ocorra naturalmente, a obra consultada deve ser incluída normalmente no arquivo referencias.bib enquanto a obra referenciada indiretamente deve ser incluída com a opção @hidden, conforme o modelo de referências .</p>
+<pre class="verbatim">
+Sobre a circulação geral da atmosfera pode-se dizer que os ventos do norte
+não movem moinhos a frase original vem de da2005 mas quem falou foi xavier2020, antes vem o autor original e depois quem citou \apud{da2005}{xavier2020}. 
+</pre>
+<p class="corpo">Sobre a circulação geral da atmosfera pode-se dizer que os ventos do nortenão movem moinhos (Xavier (2020) apud Da (2005)).</p>
+<p class="corpo">Com citação da pagina de origem (Xavier (2020) apud Da (2005)).</p>
+<p class="corpo">Nesse caso, na bibliografia só constará a obra consultada e não aquele referenciada pela obra. Para que isso ocorra naturalmente, a obra consultada deve ser incluída normalmente no arquivo referencias.bib enquanto a obra referenciada indiretamente deve ser incluída com a opção @hidden, conforme o modelo de referências [Isto é um teste de nota de rodapé].</p>
 <h4>Apud on line</h4>
 <p class="corpo">O textapud se aplica da mesma maneira que o apud descrito anteriormente. O termo on line é alusivo ao $$textcite$$label$$ definido no abntex. Nesse caso a citação é feita da seguinte forma: $ textapud\_citado\_no\_material\_lido material\_lido$</p>
-<p class="corpo">Segundo , os ventos do norte não movem moinhos.</p>
-<p class="corpo">Com citação da pagina de origem , os ventos do norte não movem moinhos.</p>
+<pre class="verbatim">
+Segundo \textapud{xavier2020}{da2005}, os ventos do
+norte não movem moinhos.
+</pre>
+<p class="corpo">Segundo Xavier (2020) apud Da (2005), os ventos do norte não movem moinhos.</p>
+<p class="corpo">Com citação da pagina de origem Xavier (2020) apud Da (2005), os ventos do norte não movem moinhos.</p>
 <h2>Siglas e Abreviaturas</h2>
-<p class="corpo">Para usar siglas tem o pacote que utiliza os comandos:</p>
-<p class="corpo">acrfull -</p>
-<p class="corpo">acrshort -</p>
-<p class="corpo">acrlong -</p>
+<p class="corpo">Para usar siglas tem o pacote ACR que utiliza os comandos:</p>
+<p class="corpo">acrfull - ONU</p>
+<p class="corpo">acrshort - ONU</p>
+<p class="corpo">acrlong - ONU</p>
 <h2>Figuras</h2>
 <p class="corpo">As figuras podem estar centralizadas ou dependerá da forma de escrita do texto.</p>
-<p class="corpo">Exemplo de Figura: Ver Figura~ .</p>
+<p class="corpo">Exemplo de Figura: Ver Figura~.</p>
 <div class="figura-preview"><img src="capitulos/figuras/exefig.png" alt="Figura" onerror="this.onerror=null; this.parentNode.innerHTML += '<br><small style=color:red>&#9888; Para o preview web exibir esta imagem, salve uma cópia de <b>capitulos/figuras/exefig.eps</b> como .png na mesma pasta.</small>';"></div>
 <p class="caption-preview">Figura &ndash; Exemplo de figura</p>
 <h2>Tabelas</h2>
 <p class="corpo">Pode-se utilizar um gerador de tabelas on-line, que agiliza o processo de escrita. Como exemplo temos o site <a href="https://www.tablesgenerator.com/" target="_blank" style="color:#0056b3;text-decoration:underline;">https://www.tablesgenerator.com/</a>.</p>
-<p class="corpo">Exemplo de Tabela: ver Tabela~ .</p>
+<p class="corpo">Exemplo de Tabela: ver Tabela~.</p>
 <p class="caption-preview">Tabela &ndash; Exemplo de tabela</p>
 <div class="tabela-preview"><table class="latex-table"><tbody><tr><td>Dado 1</td><td>Percentual</td></tr><tr><td>Tipo 1</td><td>0,6</td></tr><tr><td>Tipo 2</td><td>0,8</td></tr><tr><td>Tipo 3</td><td>1,0</td></tr><tr><td>Tipo 4</td><td>0,3</td></tr></tbody></table></div></div><div class="page"><h1 class="titulo-pre">TÍTULO DO APÊNDICE</h1>
 <p class="corpo">Elemento opcional. O(s) apêndice(s) são identificados por letras maiúsculas consecutivas, travessão e pelos respectivos títulos. Excepcionalmente utilizam-se letras maiúsculas dobradas, na identificação, quando esgotadas as 23 letras do alfabeto (ABNT, 2005).</p></div><div class="page"><h1 class="titulo-pre">ANEXO A – TÍTULO DO ANEXO</h1>

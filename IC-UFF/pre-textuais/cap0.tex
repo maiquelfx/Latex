@@ -118,9 +118,12 @@ Aprovada em <MES> de <ANO>. \\
 
 \begin{flushright}
 {\em 
-    Dedicatória(s): Elemento opcional onde o autor presta homenagem ou dedica seu trabalho (ABNT, 2005).
-    
-    Vida longa e próspera! (Spock) ``Homenagem a Leonard Nimoy''
+  Aos meus pais, pelo amor incondicional e pela crença inabalável
+  em cada passo desta jornada.\\[0.5cm]
+  À minha orientadora e ao meu orientador,
+  pela generosidade intelectual e pela confiança depositada.\\[0.5cm]
+  \textit{``A lógica levará você de A a B.
+  A imaginação levará você a qualquer lugar.''} --- Albert Einstein
 }
 \end{flushright}
 \newpage
@@ -132,7 +135,31 @@ Aprovada em <MES> de <ANO>. \\
 \pretextualchapter{Agradecimentos}
 \hspace{5mm}
 <Elemento opcional, colocado após a dedicatória (ABNT, 2005). >
-Ao meu orientador e minha orientadora, que me mostraram os caminhos a serem seguidos e pela confiança depositada.
+Ao Prof.\ José Viterbo Filho, orientador desta dissertação, pela
+  orientação precisa, pelas discussões que ampliaram meu horizonte de
+  pesquisa e pelo incentivo constante à rigorosidade científica.
+ 
+  À Prof.ª Gyslla Vasconcelos, coorientadora, pela dedicação e pelas
+  contribuições fundamentais nas etapas de revisão sistemática e de
+  análise empírica, especialmente na publicação conjunta no WCIST 2025.
+ 
+  Ao Programa de Pós-Graduação em Computação (PPGC) da Universidade
+  Federal Fluminense (UFF) e ao Instituto de Computação (IC-UFF),
+  pela infraestrutura, pelo apoio acadêmico e pela formação de
+  excelência que tornaram este trabalho possível.
+ 
+  Aos membros da banca examinadora, pela disposição em avaliar este
+  trabalho e pelas contribuições que certamente o enriquecerão.
+ 
+  Aos colegas de laboratório e de programa, pelas trocas de ideias,
+  pelos momentos de colaboração e pela amizade cultivada ao longo
+  deste percurso.
+ 
+  À minha família, pelo suporte emocional e pela compreensão nos
+  momentos de ausência que a pesquisa inevitavelmente impõe.
+ 
+  A todos que, direta ou indiretamente, contribuíram para a realização
+  deste trabalho, o meu sincero reconhecimento.
 
 
 
@@ -141,9 +168,37 @@ Ao meu orientador e minha orientadora, que me mostraram os caminhos a serem segu
 % --- -----------------------------------------------------------------
 \begin{resumo}
 
-Elemento obrigatório, constituído de uma sequência de frases concisas e objetivas e não de uma simples enumeração de tópicos, não ultrapassando 500 palavras ABNT NBR 6028:2003.
+A Gestão de Processos de Negócio (BPM) demanda modelos formalizados
+  para análise e otimização organizacional, sendo o \textit{Business
+  Process Model and Notation} (BPMN) o padrão predominante na indústria.
+  Contudo, a construção manual de modelos BPMN é intensiva em mão de
+  obra especializada, propensa a inconsistências e representa um
+  gargalo significativo nos ciclos de vida BPM. A emergência dos
+  Grandes Modelos de Linguagem (LLMs) — como GPT-4, LLaMA e Gemini
+  --- abre perspectivas para a transformação automatizada de texto
+  em modelo (\textit{text-to-model}). No entanto, evidências empíricas
+  apontam para limitações estruturais relevantes: abordagens baseadas
+  exclusivamente em LLMs demonstram incapacidade fundamental para
+  raciocínio grafo-teórico e otimização espacial exigidos por layouts
+  BPMN válidos. Esta dissertação propõe um \textit{framework} híbrido
+  que integra extração semântica via LLMs com algoritmos determinísticos
+  especializados para geração de layout gráfico, visando superar as
+  deficiências identificadas na literatura. Para tanto, realizou-se
+  uma revisão rápida de 11 estudos empíricos publicados entre 2023 e
+  2025, revelando que 55\% das abordagens falham em processos com
+  complexidade não trivial e que 64\% carecem de artefatos reproduzíveis.
+  O \textit{framework} proposto adota uma arquitetura em camadas que
+  separa responsabilidades semânticas e geométricas, permitindo
+  modelagem BPMN a partir de descrições em linguagem natural com
+  suporte a estruturas hierárquicas, gateways paralelos e
+  colaborações multi-participante. Os resultados preliminares
+  demonstram viabilidade da abordagem para processos de Nível 2
+  e Nível 3 de complexidade, contribuindo para a maturidade de
+  uma área de pesquisa em formação.
 
-{\hspace{-8mm} \bf{Palavras-chave}}: Palavras representativas do conteúdo do trabalho, isto é, palavras-chave e/ou descritores, conforme a ABNT NBR 6028:2003.
+{\hspace{-8mm} \bf{Palavras-chave}}: Modelagem de Processos de Negócio.
+  BPMN. Grandes Modelos de Linguagem. Geração Automática de Diagramas.
+  Processamento de Linguagem Natural. Framework Híbrido.
 
 \end{resumo}
 

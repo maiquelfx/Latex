@@ -6,6 +6,10 @@ git add .
 git rebase --continue
 git push
 
+LIMPAR ´PDF E LIXOS 
+git restore .
+
+
 OU SEMPRE QUE TROCAR DE AMBIENTE
 git pull --rebase
 
